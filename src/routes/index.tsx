@@ -72,12 +72,12 @@ function Builder() {
 
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
-      if (!sel || (e.target as HTMLElement).tagName === "INPUT") return;
+      if (!sel || ["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName) || panel) return;
       if (e.key === "Delete" || e.key === "Backspace") { setItems((a) => a.filter((i) => i.id !== sel)); setSel(null); }
     };
     window.addEventListener("keydown", k);
     return () => window.removeEventListener("keydown", k);
-  }, [sel]);
+  }, [sel, panel]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -125,7 +125,7 @@ function Builder() {
                 {it.type === "corkboard" && org.data.pins.length > 0 && (
                   <div className="pointer-events-none absolute inset-[6%] grid grid-cols-3 gap-[4%] bg-[oklch(0.75_0.08_65)] p-[4%]">
                     {org.data.pins.slice(0, 6).map((p, i) => (
-                      <div key={p.id} className={`note-${p.color} overflow-hidden p-[6%] font-hand leading-none shadow`} style={{ fontSize: `${0.55 * it.scale}vw`, transform: `rotate(${(i % 3) - 1 * 2}deg)` }}>{p.text}</div>
+                      <div key={p.id} className={`note-${p.color} overflow-hidden p-[6%] font-hand leading-none shadow`} style={{ fontSize: `${0.55 * it.scale}vw`, transform: `rotate(${((i % 3) - 1) * 2}deg)` }}>{p.text}</div>
                     ))}
                   </div>
                 )}

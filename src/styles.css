@@ -19,6 +19,7 @@
  */
 
 @theme inline {
+  --font-hand: "Gaegu", cursive;
   --font-display: "Fraunces", serif;
   --font-sans: "Nunito", sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
@@ -199,3 +200,10 @@
 @keyframes spin { to { transform: rotate(360deg) } }
 .room-second { animation: spin 60s steps(60) infinite; }
 .room-twinkle { animation: bulb 4s ease-in-out infinite; }
+
+/* Sticky notes */
+.note-yellow { background: oklch(0.92 0.13 98); color: oklch(0.32 0.06 80); }
+.note-pink { background: oklch(0.87 0.07 15); color: oklch(0.32 0.06 15); }
+.note-blue { background: oklch(0.87 0.06 230); color: oklch(0.3 0.06 240); }
+.note-green { background: oklch(0.88 0.08 140); color: oklch(0.3 0.06 145); }
+.font-hand { font-family: "Gaegu", cursive; }

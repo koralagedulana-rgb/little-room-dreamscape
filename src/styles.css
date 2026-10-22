@@ -182,7 +182,7 @@
 .room-floor {
   background: repeating-linear-gradient(90deg, var(--room-floor) 0 11%, var(--room-floor-line) 11% 11.3%),
     linear-gradient(var(--room-floor), var(--room-floor-line));
-  background-blend-mode: multiply;
+  background-blend-mode: normal;
 }
 .room-ambient { background: var(--room-ambient); }
 .room-glow { background: radial-gradient(circle, var(--room-bulb), transparent 60%); opacity: var(--room-glow-o); mix-blend-mode: screen; }

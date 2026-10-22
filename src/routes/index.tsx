@@ -123,9 +123,9 @@ function Builder() {
                 {it.type === "lamp" && <div className="room-glow pointer-events-none absolute left-1/2 top-[30%] h-[400%] w-[700%] -translate-x-1/2 -translate-y-1/2" />}
                 <ItemArt type={it.type} />
                 {it.type === "corkboard" && org.data.pins.length > 0 && (
-                  <div className="pointer-events-none absolute inset-[6%] grid grid-cols-3 gap-[4%] bg-[oklch(0.75_0.08_65)] p-[4%]">
+                  <div className="pointer-events-none absolute inset-[6%] grid grid-cols-3 content-start gap-[4%] bg-[oklch(0.75_0.08_65)] p-[4%]">
                     {org.data.pins.slice(0, 6).map((p, i) => (
-                      <div key={p.id} className={`note-${p.color} overflow-hidden p-[6%] font-hand leading-none shadow`} style={{ fontSize: `${0.55 * it.scale}vw`, transform: `rotate(${((i % 3) - 1) * 2}deg)` }}>{p.text}</div>
+                      <div key={p.id} className={`note-${p.color} aspect-square overflow-hidden p-[6%] font-hand leading-none shadow`} style={{ fontSize: `${0.7 * it.scale}vw`, transform: `rotate(${((i % 3) - 1) * 2}deg)` }}>{p.text}</div>
                     ))}
                   </div>
                 )}

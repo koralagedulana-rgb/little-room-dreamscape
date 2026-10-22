@@ -19,6 +19,8 @@
  */
 
 @theme inline {
+  --font-display: "Fraunces", serif;
+  --font-sans: "Nunito", sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -62,24 +64,25 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
+  --radius: 0.75rem;
+  --background: oklch(0.965 0.015 80);
+  --foreground: oklch(0.3 0.03 50);
+  --card: oklch(0.985 0.01 80);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
+  --primary: oklch(0.62 0.13 45);
+  --primary-foreground: oklch(0.98 0.01 80);
+  --secondary: oklch(0.92 0.025 75);
   --secondary-foreground: oklch(0.208 0.042 265.755);
   --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
+  --muted-foreground: oklch(0.52 0.03 55);
+  --shadow-room: 0 30px 60px -25px oklch(0.35 0.06 50 / 0.45);
   --accent: oklch(0.968 0.007 247.896);
   --accent-foreground: oklch(0.208 0.042 265.755);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
+  --border: oklch(0.88 0.025 70);
   --input: oklch(0.929 0.013 255.508);
   --ring: oklch(0.704 0.04 256.788);
   --chart-1: oklch(0.646 0.222 41.116);
@@ -142,3 +145,57 @@
     color: var(--color-foreground);
   }
 }
+
+/* Room themes */
+.room, [data-theme="cream"] {
+  --room-wall: oklch(0.93 0.02 85); --room-trim: oklch(0.97 0.01 85);
+  --room-floor: oklch(0.62 0.09 60); --room-floor-line: oklch(0.55 0.08 55);
+  --room-sky: oklch(0.85 0.06 230); --room-sun: oklch(0.92 0.12 90); --room-hill: oklch(0.72 0.1 140);
+  --room-bulb: oklch(0.92 0.12 90); --room-rug: oklch(0.9 0.02 85); --room-rug-line: oklch(0.7 0.03 70);
+  --room-screen: oklch(0.55 0.09 240); --room-ink: oklch(0.35 0.03 50);
+  --room-ambient: transparent; --room-glow-o: 0.25;
+}
+[data-theme="dusk"] {
+  --room-wall: oklch(0.82 0.07 55); --room-trim: oklch(0.88 0.05 60);
+  --room-floor: oklch(0.52 0.09 45); --room-floor-line: oklch(0.45 0.08 40);
+  --room-sky: oklch(0.72 0.14 40); --room-sun: oklch(0.85 0.15 70); --room-hill: oklch(0.45 0.08 20);
+  --room-bulb: oklch(0.88 0.15 75); --room-rug: oklch(0.7 0.1 30); --room-rug-line: oklch(0.85 0.06 60);
+  --room-screen: oklch(0.5 0.1 30); --room-ink: oklch(0.3 0.05 40);
+  --room-ambient: linear-gradient(180deg, oklch(0.75 0.15 50 / 0.15), oklch(0.5 0.15 30 / 0.15)); --room-glow-o: 0.5;
+}
+[data-theme="sage"] {
+  --room-wall: oklch(0.82 0.05 145); --room-trim: oklch(0.93 0.02 120);
+  --room-floor: oklch(0.7 0.06 75); --room-floor-line: oklch(0.62 0.05 70);
+  --room-sky: oklch(0.88 0.05 200); --room-sun: oklch(0.95 0.08 100); --room-hill: oklch(0.65 0.1 145);
+  --room-bulb: oklch(0.93 0.1 95); --room-rug: oklch(0.85 0.05 30); --room-rug-line: oklch(0.65 0.08 30);
+  --room-screen: oklch(0.55 0.07 160); --room-ink: oklch(0.32 0.04 150);
+  --room-ambient: transparent; --room-glow-o: 0.25;
+}
+[data-theme="night"] {
+  --room-wall: oklch(0.38 0.05 270); --room-trim: oklch(0.45 0.04 270);
+  --room-floor: oklch(0.36 0.05 40); --room-floor-line: oklch(0.3 0.04 40);
+  --room-sky: oklch(0.25 0.07 270); --room-sun: oklch(0.95 0.04 95); --room-hill: oklch(0.2 0.04 270);
+  --room-bulb: oklch(0.9 0.15 85); --room-rug: oklch(0.45 0.06 300); --room-rug-line: oklch(0.65 0.08 300);
+  --room-screen: oklch(0.65 0.12 230); --room-ink: oklch(0.9 0.03 85);
+  --room-ambient: radial-gradient(ellipse at 50% 20%, transparent 30%, oklch(0.15 0.05 270 / 0.35)); --room-glow-o: 0.85;
+}
+.room-floor {
+  background: repeating-linear-gradient(90deg, var(--room-floor) 0 11%, var(--room-floor-line) 11% 11.3%),
+    linear-gradient(var(--room-floor), var(--room-floor-line));
+  background-blend-mode: multiply;
+}
+.room-ambient { background: var(--room-ambient); }
+.room-glow { background: radial-gradient(circle, var(--room-bulb), transparent 60%); opacity: var(--room-glow-o); mix-blend-mode: screen; }
+@keyframes bulb { 50% { opacity: .55 } }
+.room-bulb { animation: bulb 2.4s ease-in-out infinite; }
+@keyframes breathe { 50% { transform: scaleY(1.04) scaleX(1.01) } }
+.room-breathe { animation: breathe 3.2s ease-in-out infinite; }
+@keyframes zzz { 0% { opacity: 0; transform: translateY(4px) } 50% { opacity: 1 } 100% { opacity: 0; transform: translateY(-8px) } }
+.room-zzz { animation: zzz 3.2s ease-in-out infinite; }
+@keyframes steam { 0% { opacity: 0; transform: translateY(4px) } 50% { opacity: 1 } 100% { opacity: 0; transform: translateY(-6px) } }
+.room-steam { animation: steam 3s ease-in-out infinite; }
+@keyframes sway { 50% { transform: rotate(2deg) } }
+.room-sway { animation: sway 5s ease-in-out infinite; }
+@keyframes spin { to { transform: rotate(360deg) } }
+.room-second { animation: spin 60s steps(60) infinite; }
+.room-twinkle { animation: bulb 4s ease-in-out infinite; }

@@ -1,24 +1,166 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useRef, useState, type PointerEvent as RPE } from "react";
+import { ItemArt } from "@/components/room/ItemArt";
+import { CATALOG, DEFAULT_ITEMS, STORAGE_KEY, THEMES, type ItemType, type RoomItem, type ThemeId } from "@/lib/room";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "Nook — Cozy Desktop Room Builder" },
+      { name: "description", content: "Design your own tiny cozy desktop room: arrange a desk, bookshelf, plants, lights and a sleeping cat." },
+      { property: "og:title", content: "Nook — Cozy Desktop Room Builder" },
+      { property: "og:description", content: "Arrange a cozy little room with desks, plants, string lights and a sleeping cat." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: Builder,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+const GROUPS = ["Wall", "Furniture", "Decor"] as const;
+
+function Builder() {
+  const [items, setItems] = useState<RoomItem[]>(DEFAULT_ITEMS);
+  const [theme, setTheme] = useState<ThemeId>("cream");
+  const [sel, setSel] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  const roomRef = useRef<HTMLDivElement>(null);
+  const drag = useRef<{ id: string; sx: number; sy: number; ox: number; oy: number } | null>(null);
+
+  useEffect(() => {
+    try {
+      const s = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+      if (s?.items) setItems(s.items);
+      if (s?.theme) setTheme(s.theme);
+    } catch {}
+    setLoaded(true);
+  }, []);
+  useEffect(() => {
+    if (loaded) localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, theme }));
+  }, [items, theme, loaded]);
+
+  const update = (id: string, p: Partial<RoomItem>) => setItems((a) => a.map((i) => (i.id === id ? { ...i, ...p } : i)));
+  const maxZ = () => Math.max(0, ...items.map((i) => i.z));
+  const selected = items.find((i) => i.id === sel);
+
+  const add = (type: ItemType) => {
+    const it: RoomItem = { id: crypto.randomUUID(), type, x: 50, y: CATALOG[type].group === "Wall" ? 45 : 90, scale: 1, flip: false, z: maxZ() + 1 };
+    setItems((a) => [...a, it]);
+    setSel(it.id);
+  };
+
+  const onDown = (e: RPE, it: RoomItem) => {
+    e.stopPropagation();
+    (e.target as Element).setPointerCapture?.(e.pointerId);
+    setSel(it.id);
+    drag.current = { id: it.id, sx: e.clientX, sy: e.clientY, ox: it.x, oy: it.y };
+  };
+  const onMove = (e: RPE) => {
+    const d = drag.current, r = roomRef.current?.getBoundingClientRect();
+    if (!d || !r) return;
+    const x = Math.min(100, Math.max(0, d.ox + ((e.clientX - d.sx) / r.width) * 100));
+    const y = Math.min(104, Math.max(4, d.oy + ((e.clientY - d.sy) / r.height) * 100));
+    update(d.id, { x, y });
+  };
+
+  useEffect(() => {
+    const k = (e: KeyboardEvent) => {
+      if (!sel || (e.target as HTMLElement).tagName === "INPUT") return;
+      if (e.key === "Delete" || e.key === "Backspace") { setItems((a) => a.filter((i) => i.id !== sel)); setSel(null); }
+    };
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
+  }, [sel]);
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="flex items-end justify-between px-6 pt-6 pb-4 md:px-10">
+        <div>
+          <h1 className="font-display text-4xl tracking-tight">nook<span className="text-primary">.</span></h1>
+          <p className="text-sm text-muted-foreground">build your tiny cozy desktop room</p>
+        </div>
+        <button onClick={() => { setItems(DEFAULT_ITEMS); setTheme("cream"); setSel(null); }} className="rounded-full border border-border px-4 py-1.5 text-sm hover:bg-secondary">
+          Reset room
+        </button>
+      </header>
+
+      <main className="grid gap-6 px-6 pb-10 md:px-10 lg:grid-cols-[1fr_300px]">
+        <div
+          ref={roomRef}
+          data-theme={theme}
+          onPointerMove={onMove}
+          onPointerUp={() => (drag.current = null)}
+          onPointerDown={() => setSel(null)}
+          className="room relative aspect-[16/10] w-full touch-none select-none overflow-hidden rounded-3xl shadow-[var(--shadow-room)]"
+        >
+          <div className="absolute inset-x-0 top-0 h-[78%] bg-[var(--room-wall)]" />
+          <div className="absolute inset-x-0 top-[77%] h-[2%] bg-[var(--room-trim)]" />
+          <div className="room-floor absolute inset-x-0 bottom-0 h-[22%]" />
+          {[...items].sort((a, b) => a.z - b.z).map((it) => {
+            const c = CATALOG[it.type];
+            const w = c.w * it.scale;
+            return (
+              <div
+                key={it.id}
+                onPointerDown={(e) => onDown(e, it)}
+                className={`absolute cursor-grab active:cursor-grabbing ${sel === it.id ? "outline-2 outline-dashed outline-offset-4 outline-[var(--room-ink)] rounded" : ""}`}
+                style={{ left: `${it.x}%`, top: `${it.y}%`, width: `${w}%`, aspectRatio: `1 / ${c.ratio}`, transform: `translate(-50%,-100%) scaleX(${it.flip ? -1 : 1})`, zIndex: it.z }}
+              >
+                {it.type === "lamp" && <div className="room-glow pointer-events-none absolute left-1/2 top-[30%] h-[400%] w-[700%] -translate-x-1/2 -translate-y-1/2" />}
+                <ItemArt type={it.type} />
+              </div>
+            );
+          })}
+          <div className="room-ambient pointer-events-none absolute inset-0" style={{ zIndex: 999 }} />
+        </div>
+
+        <aside className="space-y-6">
+          <section>
+            <h2 className="mb-2 font-display text-lg">Mood</h2>
+            <div className="grid grid-cols-2 gap-2">
+              {THEMES.map((t) => (
+                <button key={t.id} data-theme={t.id} onClick={() => setTheme(t.id)}
+                  className={`room flex items-center gap-2 rounded-xl border p-2 text-left text-sm ${theme === t.id ? "border-primary ring-2 ring-primary/30" : "border-border"}`}>
+                  <span className="h-6 w-6 shrink-0 rounded-full border border-border" style={{ background: "linear-gradient(135deg, var(--room-wall) 50%, var(--room-floor) 50%)" }} />
+                  <span className="text-foreground">{t.label}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {selected && (
+            <section className="rounded-2xl bg-card p-4 shadow-sm">
+              <h2 className="mb-3 font-display text-lg">{CATALOG[selected.type].label}</h2>
+              <label className="mb-3 block text-sm text-muted-foreground">
+                Size
+                <input type="range" min={0.4} max={2.2} step={0.05} value={selected.scale} onChange={(e) => update(selected.id, { scale: +e.target.value })} className="mt-1 w-full accent-primary" />
+              </label>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <button className="rounded-lg bg-secondary px-2 py-1.5" onClick={() => update(selected.id, { z: maxZ() + 1 })}>Bring front</button>
+                <button className="rounded-lg bg-secondary px-2 py-1.5" onClick={() => update(selected.id, { z: Math.min(...items.map((i) => i.z)) - 1 })}>Send back</button>
+                <button className="rounded-lg bg-secondary px-2 py-1.5" onClick={() => update(selected.id, { flip: !selected.flip })}>Flip</button>
+                <button className="rounded-lg bg-destructive/10 px-2 py-1.5 text-destructive" onClick={() => { setItems((a) => a.filter((i) => i.id !== selected.id)); setSel(null); }}>Remove</button>
+              </div>
+            </section>
+          )}
+
+          {GROUPS.map((g) => (
+            <section key={g}>
+              <h2 className="mb-2 font-display text-lg">{g}</h2>
+              <div className="grid grid-cols-3 gap-2">
+                {(Object.keys(CATALOG) as ItemType[]).filter((k) => CATALOG[k].group === g).map((k) => (
+                  <button key={k} onClick={() => add(k)} data-theme={theme}
+                    className="room group flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-2 text-xs transition hover:-translate-y-0.5 hover:border-primary">
+                    <div className="flex h-10 w-full items-center justify-center"><div className="h-full" style={{ aspectRatio: `1 / ${CATALOG[k].ratio}`, maxWidth: "100%" }}><ItemArt type={k} /></div></div>
+                    <span className="text-muted-foreground">{CATALOG[k].label}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          ))}
+          <p className="text-xs text-muted-foreground">Drag items to arrange. Your room saves automatically on this device.</p>
+        </aside>
+      </main>
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type PointerEvent as RPE } from "react";
 import { ItemArt } from "@/components/room/ItemArt";
+import { OrganizerPanel, type Panel } from "@/components/room/Organizer";
+import { useOrganizer } from "@/lib/organizer";
 import { CATALOG, DEFAULT_ITEMS, STORAGE_KEY, THEMES, type ItemType, type RoomItem, type ThemeId } from "@/lib/room";
 
 export const Route = createFileRoute("/")({
@@ -17,6 +19,7 @@ export const Route = createFileRoute("/")({
   component: Builder,
 });
 
+const PANEL_OF: Partial<Record<ItemType, Panel>> = { shelf: "shelf", corkboard: "corkboard", inbox: "inbox" };
 const GROUPS = ["Wall", "Furniture", "Decor"] as const;
 
 function Builder() {
@@ -24,8 +27,10 @@ function Builder() {
   const [theme, setTheme] = useState<ThemeId>("cream");
   const [sel, setSel] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [panel, setPanel] = useState<Panel | null>(null);
+  const org = useOrganizer();
   const roomRef = useRef<HTMLDivElement>(null);
-  const drag = useRef<{ id: string; sx: number; sy: number; ox: number; oy: number } | null>(null);
+  const drag = useRef<{ id: string; sx: number; sy: number; ox: number; oy: number; moved: boolean } | null>(null);
 
   useEffect(() => {
     try {
@@ -53,11 +58,13 @@ function Builder() {
     e.stopPropagation();
     (e.target as Element).setPointerCapture?.(e.pointerId);
     setSel(it.id);
-    drag.current = { id: it.id, sx: e.clientX, sy: e.clientY, ox: it.x, oy: it.y };
+    drag.current = { id: it.id, sx: e.clientX, sy: e.clientY, ox: it.x, oy: it.y, moved: false };
   };
   const onMove = (e: RPE) => {
     const d = drag.current, r = roomRef.current?.getBoundingClientRect();
     if (!d || !r) return;
+    if (Math.abs(e.clientX - d.sx) + Math.abs(e.clientY - d.sy) > 4) d.moved = true;
+    if (!d.moved) return;
     const x = Math.min(100, Math.max(0, d.ox + ((e.clientX - d.sx) / r.width) * 100));
     const y = Math.min(104, Math.max(4, d.oy + ((e.clientY - d.sy) / r.height) * 100));
     update(d.id, { x, y });
@@ -89,7 +96,14 @@ function Builder() {
           ref={roomRef}
           data-theme={theme}
           onPointerMove={onMove}
-          onPointerUp={() => (drag.current = null)}
+          onPointerUp={() => {
+            const d = drag.current;
+            drag.current = null;
+            if (d && !d.moved) {
+              const t = items.find((i) => i.id === d.id)?.type;
+              if (t && PANEL_OF[t]) setPanel(PANEL_OF[t]!);
+            }
+          }}
           onPointerDown={() => setSel(null)}
           className="room relative aspect-[16/10] w-full touch-none select-none overflow-hidden rounded-3xl shadow-[var(--shadow-room)]"
         >
@@ -108,6 +122,15 @@ function Builder() {
               >
                 {it.type === "lamp" && <div className="room-glow pointer-events-none absolute left-1/2 top-[30%] h-[400%] w-[700%] -translate-x-1/2 -translate-y-1/2" />}
                 <ItemArt type={it.type} />
+                {it.type === "corkboard" && org.data.pins.length > 0 && (
+                  <div className="pointer-events-none absolute inset-[6%] grid grid-cols-3 gap-[4%] bg-[oklch(0.75_0.08_65)] p-[4%]">
+                    {org.data.pins.slice(0, 6).map((p, i) => (
+                      <div key={p.id} className={`note-${p.color} overflow-hidden p-[6%] font-hand leading-none shadow`} style={{ fontSize: `${0.55 * it.scale}vw`, transform: `rotate(${(i % 3) - 1 * 2}deg)` }}>{p.text}</div>
+                    ))}
+                  </div>
+                )}
+                {it.type === "inbox" && <Badge n={org.data.tasks.filter((t) => !t.done).length} />}
+                {it.type === "shelf" && <Badge n={org.data.files.length} />}
               </div>
             );
           })}
@@ -131,6 +154,11 @@ function Builder() {
           {selected && (
             <section className="rounded-2xl bg-card p-4 shadow-sm">
               <h2 className="mb-3 font-display text-lg">{CATALOG[selected.type].label}</h2>
+              {PANEL_OF[selected.type] && (
+                <button onClick={() => setPanel(PANEL_OF[selected.type]!)} className="mb-3 w-full rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+                  Open {selected.type === "shelf" ? "files" : selected.type === "inbox" ? "tasks" : "notes"}
+                </button>
+              )}
               <label className="mb-3 block text-sm text-muted-foreground">
                 Size
                 <input type="range" min={0.4} max={2.2} step={0.05} value={selected.scale} onChange={(e) => update(selected.id, { scale: +e.target.value })} className="mt-1 w-full accent-primary" />
@@ -158,9 +186,15 @@ function Builder() {
               </div>
             </section>
           ))}
-          <p className="text-xs text-muted-foreground">Drag items to arrange. Your room saves automatically on this device.</p>
+          <p className="text-xs text-muted-foreground">Drag items to arrange. Click the bookshelf, corkboard or inbox tray to open your files, notes and tasks. Your room saves automatically on this device.</p>
         </aside>
       </main>
+      {panel && <OrganizerPanel panel={panel} data={org.data} save={org.save} onClose={() => setPanel(null)} />}
     </div>
   );
+}
+
+function Badge({ n }: { n: number }) {
+  if (!n) return null;
+  return <span className="pointer-events-none absolute -right-2 -top-2 flex h-6 min-w-6 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-bold text-primary-foreground shadow">{n}</span>;
 }

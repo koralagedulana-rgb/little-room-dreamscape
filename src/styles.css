@@ -210,15 +210,13 @@
 
 /* Room-first stage and collapsible editing drawer */
 .room-stage {
-  min-height: 100svh;
+  height: 100svh;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  transition: padding-right 280ms ease;
+  overflow: hidden;
 }
 .room-canvas {
-  width: min(100%, calc((100svh - 48px) * 1.6));
+  width: 100%;
+  height: 100%;
   flex-shrink: 0;
 }
 .room-drawer {
@@ -239,13 +237,6 @@
 .room-drawer-open {
   transform: translateX(0);
   visibility: visible;
-}
-@media (min-width: 1024px) {
-  .room-stage-drawer-open { padding-right: 344px; }
-}
-@media (max-width: 640px) {
-  .room-stage { padding: 12px; }
-  .room-canvas { border-radius: var(--radius); }
 }
 @media (prefers-reduced-motion: reduce) {
   .room-stage, .room-drawer { transition: none; }

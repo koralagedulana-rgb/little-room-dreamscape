@@ -192,6 +192,92 @@ export function ItemArt({ type, photo }: { type: ItemType; photo?: string | unde
           <rect x="14" y="74" width="52" height="8" rx="2" fill="#c27a54" />
         </svg>
       );
+    case "monstera":
+      return (
+        <svg viewBox="0 0 100 140" className="h-full w-full">
+          <g className="room-sway" style={{ transformOrigin: "50px 100px" }}>
+            {[[-42, 46, 34], [-14, 30, 44], [16, 28, 46], [44, 48, 32], [0, 14, 40]].map(([r, y, h], i) => (
+              <g key={i} transform={`rotate(${r} 50 100)`}>
+                <ellipse cx="50" cy={y as number} rx="13" ry={(h as number) / 2} fill={i % 2 ? "#4d7a52" : "#5f9163"} />
+                <line x1="50" y1={(y as number) - (h as number) / 2} x2="50" y2="100" stroke="#3c6342" strokeWidth="1.6" />
+                {[0.3, 0.55, 0.8].map((t, j) => (
+                  <line key={j} x1="50" y1={(y as number) - (h as number) / 2 + (h as number) * t} x2={j % 2 ? 41 : 59} y2={(y as number) - (h as number) / 2 + (h as number) * t + 4} stroke="#3c6342" strokeWidth="1" />
+                ))}
+              </g>
+            ))}
+          </g>
+          <path d="M32 100 H68 L62 140 H38Z" fill="#e8e2d5" />
+          <rect x="28" y="96" width="44" height="7" rx="2" fill="#d8d0bf" />
+        </svg>
+      );
+    case "cactus":
+      return (
+        <svg viewBox="0 0 60 96" className="h-full w-full">
+          <g className="room-sway" style={{ transformOrigin: "30px 70px" }}>
+            <rect x="22" y="8" width="16" height="64" rx="8" fill="#5f9163" />
+            <rect x="6" y="26" width="10" height="26" rx="5" fill="#6ea56f" />
+            <rect x="10" y="40" width="14" height="8" rx="4" fill="#6ea56f" />
+            <rect x="44" y="20" width="10" height="30" rx="5" fill="#6ea56f" />
+            <rect x="36" y="38" width="14" height="8" rx="4" fill="#6ea56f" />
+            {[16, 30, 44, 58].map((y) => <line key={y} x1="30" y1={y} x2="30" y2={y + 6} stroke="#4d7a52" strokeWidth="1.2" />)}
+            <circle cx="30" cy="6" r="4" fill="#e88aa0" />
+          </g>
+          <path d="M16 70 H44 L40 96 H20Z" fill="#c9604b" />
+          <rect x="13" y="66" width="34" height="7" rx="2" fill="#b05340" />
+        </svg>
+      );
+    case "hangingplant":
+      return (
+        <svg viewBox="0 0 80 144" className="h-full w-full overflow-visible">
+          <line x1="40" y1="0" x2="24" y2="34" stroke="#8a6a4a" strokeWidth="1.5" />
+          <line x1="40" y1="0" x2="56" y2="34" stroke="#8a6a4a" strokeWidth="1.5" />
+          <line x1="40" y1="0" x2="40" y2="30" stroke="#8a6a4a" strokeWidth="1.5" />
+          <path d="M22 32 H58 L52 58 H28Z" fill="#d9a05e" />
+          <path d="M22 32 H58 L56 42 H24Z" fill="#c28a4c" />
+          <g className="room-sway" style={{ transformOrigin: "40px 58px" }}>
+            {[[14, 66], [26, 72], [40, 78], [54, 72], [66, 64]].map(([x, y], i) => (
+              <g key={i}>
+                <path d={`M${x} 58 Q${x + (i % 2 ? 6 : -6)} ${(y as number) + 14} ${x} ${(y as number) + 30}`} stroke="#5f9163" strokeWidth="1.6" fill="none" />
+                {[0.25, 0.55, 0.85].map((t, j) => (
+                  <ellipse key={j} cx={(x as number) + (i % 2 ? 3 : -3)} cy={58 + ((y as number) + 30 - 58) * t} rx="3.4" ry="5" fill={j % 2 ? "#6ea56f" : "#4d7a52"} transform={`rotate(${(i % 2 ? 24 : -24)} ${x} ${58 + ((y as number) + 30 - 58) * t})`} />
+                ))}
+              </g>
+            ))}
+            <ellipse cx="40" cy="52" rx="20" ry="9" fill="#6ea56f" />
+          </g>
+        </svg>
+      );
+    case "bookrow":
+      return (
+        <svg viewBox="0 0 100 90" className="h-full w-full">
+          <rect x="0" y="84" width="100" height="6" rx="2" fill="#a8774f" />
+          {[
+            [4, "#c9604b", 62, 9], [14, "#e5c27a", 70, 8], [23, "#5d7f6e", 58, 10], [34, "#efe6d6", 66, 8], [43, "#3f5873", 72, 9], [53, "#d9a05e", 60, 8], [62, "#8a5a36", 68, 9],
+          ].map(([x, c, h, w], i) => (
+            <g key={i}>
+              <rect x={x as number} y={84 - (h as number)} width={w as number} height={h as number} rx="1" fill={c as string} />
+              <rect x={x as number} y={84 - (h as number) + 6} width={w as number} height="2" fill="#00000022" />
+            </g>
+          ))}
+          <g transform="rotate(14 82 84)"><rect x="74" y="30" width="9" height="54" rx="1" fill="#b0538a" /></g>
+          <rect x="86" y="48" width="10" height="36" rx="1" fill="#7fa36e" />
+        </svg>
+      );
+    case "openbook":
+      return (
+        <svg viewBox="0 0 100 60" className="h-full w-full">
+          <path d="M4 12 Q27 2 50 12 Q73 2 96 12 V52 Q73 42 50 52 Q27 42 4 52Z" fill="#8a5a36" />
+          <path d="M8 13 Q29 5 50 14 V50 Q29 41 8 50Z" fill="#fbf6ec" />
+          <path d="M92 13 Q71 5 50 14 V50 Q71 41 92 50Z" fill="#f4efe6" />
+          <line x1="50" y1="14" x2="50" y2="50" stroke="#d8d0bf" strokeWidth="1.5" />
+          {[20, 27, 34, 41].map((y) => (
+            <g key={y}>
+              <line x1="14" y1={y} x2="44" y2={y - 2} stroke="#b9ac96" strokeWidth="1.4" />
+              <line x1="56" y1={y - 2} x2="86" y2={y} stroke="#b9ac96" strokeWidth="1.4" />
+            </g>
+          ))}
+        </svg>
+      );
     case "cat":
       return (
         <svg viewBox="0 0 100 55" className="h-full w-full overflow-visible">

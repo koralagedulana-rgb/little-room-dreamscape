@@ -239,7 +239,7 @@ export function ItemArt({ type, photo }: { type: ItemType; photo?: string | unde
               <g key={i}>
                 <path d={`M${x} 58 Q${x + (i % 2 ? 6 : -6)} ${(y as number) + 14} ${x} ${(y as number) + 30}`} stroke="#5f9163" strokeWidth="1.6" fill="none" />
                 {[0.25, 0.55, 0.85].map((t, j) => (
-                  <ellipse key={j} cx={(x as number) + (i % 2 ? 3 : -3)} cy={58 + ((y as number) + 30 - 58) * t} rx="3.4" ry="5" fill={j % 2 ? "#6ea56f" : "#4d7a52"} transform={`rotate(${(i % 2 ? 24 : -24)} ${x} ${58 + ((y as number) + 30 - 58) * t})`} />
+                  <ellipse key={j} cx={(x as number) + (i % 2 ? 3 : -3)} cy={58 + ((y as number) + 30 - 58) * t} rx="3.4" ry="5" fill={j % 2 ? "#6ea56f" : "#4d7a52"} transform={`rotate(${i % 2 ? 24 : -24} ${x as number} ${58 + ((y as number) + 30 - 58) * t})`} />
                 ))}
               </g>
             ))}

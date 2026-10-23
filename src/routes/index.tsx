@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type PointerEvent as RPE } from "react";
 import { PanelRightOpen, PanelRightClose } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ItemArt } from "@/components/room/ItemArt";
+import { PhotoPicker } from "@/components/room/PhotoPicker";
 import { OrganizerPanel, type Panel } from "@/components/room/Organizer";
 import { useOrganizer } from "@/lib/organizer";
 import { CATALOG, DEFAULT_ITEMS, STORAGE_KEY, THEMES, type ItemType, type RoomItem, type ThemeId } from "@/lib/room";
@@ -44,7 +45,9 @@ function Builder() {
     setLoaded(true);
   }, []);
   useEffect(() => {
-    if (loaded) localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, theme }));
+    if (loaded) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, theme })); } catch {}
+    }
   }, [items, theme, loaded]);
 
   const update = (id: string, p: Partial<RoomItem>) => setItems((a) => a.map((i) => (i.id === id ? { ...i, ...p } : i)));
@@ -123,12 +126,13 @@ function Builder() {
             return (
               <div
                 key={it.id}
+                aria-label={c.label}
                 onPointerDown={(e) => onDown(e, it)}
                 className={`absolute cursor-grab active:cursor-grabbing ${sel === it.id ? "outline-2 outline-dashed outline-offset-4 outline-[var(--room-ink)] rounded" : ""}`}
                 style={{ left: `${it.x}%`, top: `${it.y}%`, width: `${w}%`, aspectRatio: `1 / ${c.ratio}`, transform: `translate(-50%,-100%) scaleX(${it.flip ? -1 : 1})`, zIndex: it.z }}
               >
                 {it.type === "lamp" && <div className="room-glow pointer-events-none absolute left-1/2 top-[30%] h-[400%] w-[700%] -translate-x-1/2 -translate-y-1/2" />}
-                <ItemArt type={it.type} />
+                <ItemArt type={it.type} photo={it.photo} />
                 {it.type === "corkboard" && org.data.pins.length > 0 && (
                   <div className="pointer-events-none absolute inset-[6%] grid grid-cols-3 content-start gap-[4%] bg-[oklch(0.75_0.08_65)] p-[4%]">
                     {org.data.pins.slice(0, 6).map((p, i) => (
@@ -167,6 +171,14 @@ function Builder() {
           {selected && (
             <section className="rounded-2xl bg-card p-4 shadow-sm">
               <h2 className="mb-3 font-display text-lg">{CATALOG[selected.type].label}</h2>
+              {selected.type === "frame" && <PhotoPicker key={selected.id} photo={selected.photo} onChange={(photo) => {
+                const next = items.map((item) => item.id === selected.id ? { ...item, photo } : item);
+                try {
+                  localStorage.setItem(STORAGE_KEY, JSON.stringify({ items: next, theme }));
+                  setItems(next);
+                  return true;
+                } catch { return false; }
+              }} />}
               {PANEL_OF[selected.type] && (
                 <button onClick={() => { const nextPanel = PANEL_OF[selected.type]; if (nextPanel) setPanel(nextPanel); }} className="mb-3 w-full rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
                   Open {selected.type === "shelf" ? "files" : selected.type === "inbox" ? "tasks" : "notes"}

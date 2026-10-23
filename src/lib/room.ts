@@ -10,6 +10,7 @@ export interface RoomItem {
   scale: number;
   flip: boolean;
   z: number;
+  photo?: string | undefined;
 }
 
 export const CATALOG: Record<ItemType, { label: string; w: number; ratio: number; group: "Wall" | "Furniture" | "Decor" }> = {
@@ -18,7 +19,7 @@ export const CATALOG: Record<ItemType, { label: string; w: number; ratio: number
   corkboard: { label: "Corkboard", w: 20, ratio: 0.72, group: "Wall" },
   calendar: { label: "Calendar", w: 7, ratio: 1.25, group: "Wall" },
   clock: { label: "Clock", w: 7, ratio: 1, group: "Wall" },
-  frame: { label: "Photo frame", w: 8, ratio: 1.2, group: "Wall" },
+  frame: { label: "Photo frame", w: 8, ratio: 1.2, group: "Decor" },
   shelf: { label: "Bookshelf", w: 16, ratio: 1.6, group: "Furniture" },
   desk: { label: "Desk", w: 30, ratio: 0.5, group: "Furniture" },
   rug: { label: "Rug", w: 36, ratio: 0.18, group: "Furniture" },

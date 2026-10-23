@@ -1,7 +1,7 @@
 import type { ItemType } from "@/lib/room";
 
 // Illustrated artwork for each room item. Colors here are part of the illustration itself.
-export function ItemArt({ type }: { type: ItemType }) {
+export function ItemArt({ type, photo }: { type: ItemType; photo?: string | undefined }) {
   switch (type) {
     case "window":
       return (
@@ -84,11 +84,15 @@ export function ItemArt({ type }: { type: ItemType }) {
     case "frame":
       return (
         <svg viewBox="0 0 80 96" className="h-full w-full">
-          <rect width="80" height="96" rx="3" fill="#2f2a26" />
-          <rect x="7" y="7" width="66" height="82" fill="#f7f1e6" />
-          <rect x="14" y="14" width="52" height="56" fill="var(--room-sky)" />
-          <circle cx="40" cy="44" r="12" fill="var(--room-sun)" />
-          <path d="M14 62 Q30 52 40 60 T66 56 V70 H14Z" fill="var(--room-hill)" />
+          <rect width="80" height="96" rx="3" fill="var(--room-frame)" />
+          <rect x="7" y="7" width="66" height="82" fill="var(--room-mat)" />
+          {photo ? <svg x="14" y="14" width="52" height="56" viewBox="0 0 52 56" overflow="hidden">
+            <image href={photo} width="52" height="56" preserveAspectRatio="xMidYMid slice" />
+          </svg> : <>
+            <rect x="14" y="14" width="52" height="56" fill="var(--room-sky)" />
+            <circle cx="40" cy="44" r="12" fill="var(--room-sun)" />
+            <path d="M14 62 Q30 52 40 60 T66 56 V70 H14Z" fill="var(--room-hill)" />
+          </>}
         </svg>
       );
     case "shelf":

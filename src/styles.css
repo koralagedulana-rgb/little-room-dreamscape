@@ -207,3 +207,46 @@
 .note-blue { background: oklch(0.87 0.06 230); color: oklch(0.3 0.06 240); }
 .note-green { background: oklch(0.88 0.08 140); color: oklch(0.3 0.06 145); }
 .font-hand { font-family: "Gaegu", cursive; }
+
+/* Room-first stage and collapsible editing drawer */
+.room-stage {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  transition: padding-right 280ms ease;
+}
+.room-canvas {
+  width: min(100%, calc((100svh - 48px) * 1.6));
+  flex-shrink: 0;
+}
+.room-drawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 1100;
+  width: min(320px, 100%);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 24px 20px 32px;
+  background: var(--card);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-room);
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform 280ms ease, visibility 280ms;
+}
+.room-drawer-open {
+  transform: translateX(0);
+  visibility: visible;
+}
+@media (min-width: 1024px) {
+  .room-stage-drawer-open { padding-right: 344px; }
+}
+@media (max-width: 640px) {
+  .room-stage { padding: 12px; }
+  .room-canvas { border-radius: var(--radius); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .room-stage, .room-drawer { transition: none; }
+}

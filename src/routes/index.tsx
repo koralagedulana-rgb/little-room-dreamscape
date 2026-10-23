@@ -96,7 +96,7 @@ function Builder() {
         aria-expanded={drawerOpen}
         aria-controls="room-menu"
         onClick={() => setDrawerOpen((open) => !open)}
-        className="fixed right-5 top-5 z-[1200] h-11 w-11 rounded-full bg-card shadow-[var(--shadow-room)]"
+        className="fixed bottom-5 left-5 z-[1200] h-11 w-11 rounded-full bg-card shadow-[var(--shadow-room)]"
       >
         {drawerOpen ? <PanelRightClose /> : <PanelRightOpen />}
       </Button>

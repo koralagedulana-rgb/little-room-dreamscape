@@ -1,6 +1,7 @@
 export type ItemType =
   | "window" | "lights" | "corkboard" | "calendar" | "clock" | "frame" | "shelf"
-  | "desk" | "monitor" | "lamp" | "mug" | "inbox" | "plant" | "cat" | "rug" | "trash" | "books";
+  | "desk" | "monitor" | "lamp" | "mug" | "inbox" | "plant" | "cat" | "rug" | "trash" | "books"
+  | "monstera" | "cactus" | "hangingplant" | "bookrow" | "openbook";
 
 export interface RoomItem {
   id: string;
@@ -28,7 +29,12 @@ export const CATALOG: Record<ItemType, { label: string; w: number; ratio: number
   mug: { label: "Coffee mug", w: 3.2, ratio: 1.1, group: "Decor" },
   inbox: { label: "Inbox tray", w: 9, ratio: 0.38, group: "Decor" },
   books: { label: "Book stack", w: 6, ratio: 0.7, group: "Decor" },
+  bookrow: { label: "Book row", w: 10, ratio: 0.9, group: "Decor" },
+  openbook: { label: "Open book", w: 8, ratio: 0.6, group: "Decor" },
   plant: { label: "Plant", w: 8, ratio: 1.5, group: "Decor" },
+  monstera: { label: "Monstera", w: 11, ratio: 1.4, group: "Decor" },
+  cactus: { label: "Cactus", w: 6, ratio: 1.6, group: "Decor" },
+  hangingplant: { label: "Hanging plant", w: 8, ratio: 1.8, group: "Wall" },
   cat: { label: "Sleeping cat", w: 9, ratio: 0.55, group: "Decor" },
   trash: { label: "Wastebasket", w: 6, ratio: 1.2, group: "Decor" },
 };

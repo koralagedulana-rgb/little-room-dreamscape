@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type PointerEvent as RPE } from "react";
+import { PanelRightOpen, PanelRightClose } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { ItemArt } from "@/components/room/ItemArt";
 import { OrganizerPanel, type Panel } from "@/components/room/Organizer";
 import { useOrganizer } from "@/lib/organizer";
@@ -23,6 +25,7 @@ const PANEL_OF: Partial<Record<ItemType, Panel>> = { shelf: "shelf", corkboard: 
 const GROUPS = ["Wall", "Furniture", "Decor"] as const;
 
 function Builder() {
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [items, setItems] = useState<RoomItem[]>(DEFAULT_ITEMS);
   const [theme, setTheme] = useState<ThemeId>("cream");
   const [sel, setSel] = useState<string | null>(null);
@@ -72,6 +75,7 @@ function Builder() {
 
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !panel) setDrawerOpen(false);
       if (!sel || ["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName) || panel) return;
       if (e.key === "Delete" || e.key === "Backspace") { setItems((a) => a.filter((i) => i.id !== sel)); setSel(null); }
     };
@@ -81,17 +85,19 @@ function Builder() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="flex items-end justify-between px-6 pt-6 pb-4 md:px-10">
-        <div>
-          <h1 className="font-display text-4xl tracking-tight">nook<span className="text-primary">.</span></h1>
-          <p className="text-sm text-muted-foreground">build your tiny cozy desktop room</p>
-        </div>
-        <button onClick={() => { setItems(DEFAULT_ITEMS); setTheme("cream"); setSel(null); }} className="rounded-full border border-border px-4 py-1.5 text-sm hover:bg-secondary">
-          Reset room
-        </button>
-      </header>
-
-      <main className="grid gap-6 px-6 pb-10 md:px-10 lg:grid-cols-[1fr_300px]">
+      <Button
+        variant="outline"
+        size="icon"
+        aria-label={drawerOpen ? "Hide room menu" : "Open room menu"}
+        title={drawerOpen ? "Hide room menu" : "Open room menu"}
+        aria-expanded={drawerOpen}
+        aria-controls="room-menu"
+        onClick={() => setDrawerOpen((open) => !open)}
+        className="fixed right-5 top-5 z-[1200] h-11 w-11 rounded-full bg-card shadow-[var(--shadow-room)]"
+      >
+        {drawerOpen ? <PanelRightClose /> : <PanelRightOpen />}
+      </Button>
+      <main className={`room-stage ${drawerOpen ? "room-stage-drawer-open" : ""}`}>
         <div
           ref={roomRef}
           data-theme={theme}
@@ -101,11 +107,12 @@ function Builder() {
             drag.current = null;
             if (d && !d.moved) {
               const t = items.find((i) => i.id === d.id)?.type;
-              if (t && PANEL_OF[t]) setPanel(PANEL_OF[t]!);
+               const nextPanel = t ? PANEL_OF[t] : undefined;
+               if (nextPanel) setPanel(nextPanel);
             }
           }}
           onPointerDown={() => setSel(null)}
-          className="room relative aspect-[16/10] w-full touch-none select-none overflow-hidden rounded-3xl shadow-[var(--shadow-room)]"
+          className="room room-canvas relative aspect-[16/10] touch-none select-none overflow-hidden rounded-3xl shadow-[var(--shadow-room)]"
         >
           <div className="absolute inset-x-0 top-0 h-[78%] bg-[var(--room-wall)]" />
           <div className="absolute inset-x-0 top-[77%] h-[2%] bg-[var(--room-trim)]" />
@@ -137,7 +144,13 @@ function Builder() {
           <div className="room-ambient pointer-events-none absolute inset-0" style={{ zIndex: 999 }} />
         </div>
 
-        <aside className="space-y-6">
+        <aside id="room-menu" aria-label="Room menu" inert={!drawerOpen} className={`room-drawer space-y-6 ${drawerOpen ? "room-drawer-open" : ""}`}>
+          <header className="space-y-4 pr-12">
+            <h1 className="font-display text-4xl">nook<span className="text-primary">.</span></h1>
+            <Button variant="outline" onClick={() => { setItems(DEFAULT_ITEMS); setTheme("cream"); setSel(null); }}>
+              Reset room
+            </Button>
+          </header>
           <section>
             <h2 className="mb-2 font-display text-lg">Mood</h2>
             <div className="grid grid-cols-2 gap-2">
@@ -155,7 +168,7 @@ function Builder() {
             <section className="rounded-2xl bg-card p-4 shadow-sm">
               <h2 className="mb-3 font-display text-lg">{CATALOG[selected.type].label}</h2>
               {PANEL_OF[selected.type] && (
-                <button onClick={() => setPanel(PANEL_OF[selected.type]!)} className="mb-3 w-full rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+                <button onClick={() => { const nextPanel = PANEL_OF[selected.type]; if (nextPanel) setPanel(nextPanel); }} className="mb-3 w-full rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
                   Open {selected.type === "shelf" ? "files" : selected.type === "inbox" ? "tasks" : "notes"}
                 </button>
               )}
@@ -186,7 +199,6 @@ function Builder() {
               </div>
             </section>
           ))}
-          <p className="text-xs text-muted-foreground">Drag items to arrange. Click the bookshelf, corkboard or inbox tray to open your files, notes and tasks. Your room saves automatically on this device.</p>
         </aside>
       </main>
       {panel && <OrganizerPanel panel={panel} data={org.data} save={org.save} onClose={() => setPanel(null)} />}

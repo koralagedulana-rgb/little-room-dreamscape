@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep room editing controls in the collapsible drawer on the builder route; the room stage remains independently interactive when the drawer is closed.

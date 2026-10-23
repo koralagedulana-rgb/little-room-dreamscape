@@ -112,7 +112,7 @@ function Builder() {
             }
           }}
           onPointerDown={() => setSel(null)}
-          className="room room-canvas relative aspect-[16/10] touch-none select-none overflow-hidden rounded-3xl shadow-[var(--shadow-room)]"
+          className="room room-canvas relative touch-none select-none overflow-hidden"
         >
           <div className="absolute inset-x-0 top-0 h-[78%] bg-[var(--room-wall)]" />
           <div className="absolute inset-x-0 top-[77%] h-[2%] bg-[var(--room-trim)]" />

@@ -10,7 +10,7 @@ export interface RoomItem {
   scale: number;
   flip: boolean;
   z: number;
-  photo?: string;
+  photo?: string | undefined;
 }
 
 export const CATALOG: Record<ItemType, { label: string; w: number; ratio: number; group: "Wall" | "Furniture" | "Decor" }> = {

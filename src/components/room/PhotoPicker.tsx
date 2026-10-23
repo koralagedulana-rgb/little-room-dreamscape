@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { ImagePlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function PhotoPicker({ photo, onChange }: { photo?: string; onChange: (photo?: string) => boolean }) {
+export function PhotoPicker({ photo, onChange }: { photo?: string | undefined; onChange: (photo?: string) => boolean }) {
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");

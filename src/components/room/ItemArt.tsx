@@ -1,7 +1,7 @@
 import type { ItemType } from "@/lib/room";
 
 // Illustrated artwork for each room item. Colors here are part of the illustration itself.
-export function ItemArt({ type, photo }: { type: ItemType; photo?: string }) {
+export function ItemArt({ type, photo }: { type: ItemType; photo?: string | undefined }) {
   switch (type) {
     case "window":
       return (

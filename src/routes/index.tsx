@@ -28,7 +28,7 @@ const GROUPS = ["Wall", "Furniture", "Decor"] as const;
 function Builder() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [items, setItems] = useState<RoomItem[]>(DEFAULT_ITEMS);
-  const [theme, setTheme] = useState<ThemeId>("cream");
+  const [theme, setTheme] = useState<ThemeId>("academia");
   const [sel, setSel] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [panel, setPanel] = useState<Panel | null>(null);

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type PointerEvent as RPE } from "react";
-import { PanelRightOpen, PanelRightClose } from "lucide-react";
+import { PanelRightOpen, PanelRightClose, Lock, LockOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ItemArt } from "@/components/room/ItemArt";
 import { PhotoPicker } from "@/components/room/PhotoPicker";
@@ -31,6 +31,7 @@ function Builder() {
   const [theme, setTheme] = useState<ThemeId>("academia");
   const [sel, setSel] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [locked, setLocked] = useState(false);
   const [panel, setPanel] = useState<Panel | null>(null);
   const org = useOrganizer();
   const roomRef = useRef<HTMLDivElement>(null);
@@ -41,14 +42,15 @@ function Builder() {
       const s = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
       if (s?.items) setItems(s.items);
       if (s?.theme) setTheme(s.theme);
+      if (typeof s?.locked === "boolean") setLocked(s.locked);
     } catch {}
     setLoaded(true);
   }, []);
   useEffect(() => {
     if (loaded) {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, theme })); } catch {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, theme, locked })); } catch {}
     }
-  }, [items, theme, loaded]);
+  }, [items, theme, locked, loaded]);
 
   const update = (id: string, p: Partial<RoomItem>) => setItems((a) => a.map((i) => (i.id === id ? { ...i, ...p } : i)));
   const maxZ = () => Math.max(0, ...items.map((i) => i.z));
@@ -63,14 +65,14 @@ function Builder() {
   const onDown = (e: RPE, it: RoomItem) => {
     e.stopPropagation();
     (e.target as Element).setPointerCapture?.(e.pointerId);
-    setSel(it.id);
+    setSel(locked ? null : it.id);
     drag.current = { id: it.id, sx: e.clientX, sy: e.clientY, ox: it.x, oy: it.y, moved: false };
   };
   const onMove = (e: RPE) => {
     const d = drag.current, r = roomRef.current?.getBoundingClientRect();
     if (!d || !r) return;
     if (Math.abs(e.clientX - d.sx) + Math.abs(e.clientY - d.sy) > 4) d.moved = true;
-    if (!d.moved) return;
+    if (!d.moved || locked) return;
     const x = Math.min(100, Math.max(0, d.ox + ((e.clientX - d.sx) / r.width) * 100));
     const y = Math.min(104, Math.max(4, d.oy + ((e.clientY - d.sy) / r.height) * 100));
     update(d.id, { x, y });
@@ -100,6 +102,17 @@ function Builder() {
       >
         {drawerOpen ? <PanelRightClose /> : <PanelRightOpen />}
       </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        aria-label={locked ? "Unlock room layout" : "Lock room layout"}
+        title={locked ? "Unlock room layout" : "Lock room layout"}
+        aria-pressed={locked}
+        onClick={() => { setLocked((l) => !l); setSel(null); }}
+        className="fixed bottom-5 left-[4.5rem] z-[1200] h-11 w-11 rounded-full bg-card shadow-[var(--shadow-room)]"
+      >
+        {locked ? <Lock /> : <LockOpen />}
+      </Button>
       <main className={`room-stage ${drawerOpen ? "room-stage-drawer-open" : ""}`}>
         <div
           ref={roomRef}
@@ -128,7 +141,7 @@ function Builder() {
                 key={it.id}
                 aria-label={c.label}
                 onPointerDown={(e) => onDown(e, it)}
-                className={`absolute cursor-grab active:cursor-grabbing ${sel === it.id ? "outline-2 outline-dashed outline-offset-4 outline-[var(--room-ink)] rounded" : ""}`}
+                className={`absolute ${locked ? "cursor-pointer" : "cursor-grab active:cursor-grabbing"} ${sel === it.id ? "outline-2 outline-dashed outline-offset-4 outline-[var(--room-ink)] rounded" : ""}`}
                 style={{ left: `${it.x}%`, top: `${it.y}%`, width: `${w}%`, aspectRatio: `1 / ${c.ratio}`, transform: `translate(-50%,-100%) scaleX(${it.flip ? -1 : 1})`, zIndex: it.z }}
               >
                 {it.type === "lamp" && <div className="room-glow pointer-events-none absolute left-1/2 top-[30%] h-[400%] w-[700%] -translate-x-1/2 -translate-y-1/2" />}
@@ -168,13 +181,13 @@ function Builder() {
             </div>
           </section>
 
-          {selected && (
+          {selected && !locked && (
             <section className="rounded-2xl bg-card p-4 shadow-sm">
               <h2 className="mb-3 font-display text-lg">{CATALOG[selected.type].label}</h2>
               {selected.type === "frame" && <PhotoPicker key={selected.id} photo={selected.photo} onChange={(photo) => {
                 const next = items.map((item) => item.id === selected.id ? { ...item, photo } : item);
                 try {
-                  localStorage.setItem(STORAGE_KEY, JSON.stringify({ items: next, theme }));
+                  localStorage.setItem(STORAGE_KEY, JSON.stringify({ items: next, theme, locked }));
                   setItems(next);
                   return true;
                 } catch { return false; }

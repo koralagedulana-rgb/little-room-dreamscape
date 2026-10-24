@@ -40,6 +40,7 @@ export const CATALOG: Record<ItemType, { label: string; w: number; ratio: number
 };
 
 export const THEMES = [
+  { id: "academia", label: "Dark academia" },
   { id: "cream", label: "Cream morning" },
   { id: "dusk", label: "Golden dusk" },
   { id: "sage", label: "Sage cottage" },

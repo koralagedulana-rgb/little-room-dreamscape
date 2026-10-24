@@ -235,7 +235,7 @@ export function ItemArt({ type, photo }: { type: ItemType; photo?: string | unde
           <path d="M22 32 H58 L52 58 H28Z" fill="#d9a05e" />
           <path d="M22 32 H58 L56 42 H24Z" fill="#c28a4c" />
           <g className="room-sway" style={{ transformOrigin: "40px 58px" }}>
-            {[[14, 66], [26, 72], [40, 78], [54, 72], [66, 64]].map(([x, y], i) => (
+            {([[14, 66], [26, 72], [40, 78], [54, 72], [66, 64]] as [number, number][]).map(([x, y], i) => (
               <g key={i}>
                 <path d={`M${x} 58 Q${x + (i % 2 ? 6 : -6)} ${(y as number) + 14} ${x} ${(y as number) + 30}`} stroke="#3a7a44" strokeWidth="1.6" fill="none" />
                 {[0.25, 0.55, 0.85].map((t, j) => (

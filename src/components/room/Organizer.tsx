@@ -1,5 +1,18 @@
 import { useRef, useState, type ReactNode } from "react";
-import { FileText, Download, Trash2, Upload, X, Plus, ImagePlus, Play, Pause, Music2, ListMusic, ExternalLink } from "lucide-react";
+import {
+  FileText,
+  Download,
+  Trash2,
+  Upload,
+  X,
+  Plus,
+  ImagePlus,
+  Play,
+  Pause,
+  Music2,
+  ListMusic,
+  ExternalLink,
+} from "lucide-react";
 import {
   fmtSize,
   MAX_FILE_BYTES,
@@ -381,7 +394,8 @@ function Music({ data, save }: Sub) {
       {data.tracks.length === 0 ? (
         <Empty>
           <span className="flex items-center justify-center gap-1.5">
-            <ListMusic className="h-4 w-4" /> No tracks yet. Add a YouTube link to start your playlist.
+            <ListMusic className="h-4 w-4" /> No tracks yet. Add a YouTube link to start your
+            playlist.
           </span>
         </Empty>
       ) : (
@@ -420,7 +434,9 @@ function Music({ data, save }: Sub) {
                   </a>
                   <button
                     aria-label="Remove track"
-                    onClick={() => save({ ...data, tracks: data.tracks.filter((x) => x.id !== t.id) })}
+                    onClick={() =>
+                      save({ ...data, tracks: data.tracks.filter((x) => x.id !== t.id) })
+                    }
                     className="rounded-lg p-1.5 text-destructive opacity-0 hover:bg-background group-hover:opacity-100"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -432,7 +448,8 @@ function Music({ data, save }: Sub) {
         </div>
       )}
       <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Music2 className="h-3.5 w-3.5" /> YouTube Music links play the same track in the embedded player above.
+        <Music2 className="h-3.5 w-3.5" /> YouTube Music links play the same track in the embedded
+        player above.
       </p>
     </div>
   );

@@ -24,8 +24,8 @@ export interface Task {
 export interface Track {
   id: string;
   title: string;
- url: string;
- added: number;
+  url: string;
+  added: number;
 }
 export type PinColor = "yellow" | "pink" | "blue" | "green";
 export const PIN_COLORS: PinColor[] = ["yellow", "pink", "blue", "green"];
@@ -45,7 +45,13 @@ export function useOrganizer() {
   useEffect(() => {
     try {
       const s = JSON.parse(localStorage.getItem(KEY) || "null");
-      if (s) setData({ files: s.files ?? [], pins: s.pins ?? [], tasks: s.tasks ?? [], tracks: s.tracks ?? [] });
+      if (s)
+        setData({
+          files: s.files ?? [],
+          pins: s.pins ?? [],
+          tasks: s.tasks ?? [],
+          tracks: s.tracks ?? [],
+        });
     } catch {
       // corrupt or missing storage — start fresh
     }

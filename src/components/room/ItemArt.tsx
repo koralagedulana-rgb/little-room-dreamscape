@@ -564,7 +564,16 @@ export function ItemArt({ type, photo }: { type: ItemType; photo?: string | unde
         <svg viewBox="0 0 70 100" className="h-full w-full">
           <rect x="2" y="2" width="66" height="96" rx="6" fill="#5a3a24" />
           <rect x="6" y="6" width="58" height="88" rx="4" fill="#6a4428" />
-          <rect x="6" y="6" width="58" height="88" rx="4" fill="none" stroke="#3a2418" strokeWidth="1" />
+          <rect
+            x="6"
+            y="6"
+            width="58"
+            height="88"
+            rx="4"
+            fill="none"
+            stroke="#3a2418"
+            strokeWidth="1"
+          />
           <circle cx="35" cy="30" r="15" fill="#1e140c" />
           <circle cx="35" cy="30" r="11" fill="#2a1c12" />
           <circle cx="35" cy="30" r="6" fill="#8a6440" />
@@ -576,7 +585,15 @@ export function ItemArt({ type, photo }: { type: ItemType; photo?: string | unde
           <circle cx="32" cy="90" r="1" fill="#3a2418" />
           <circle cx="38" cy="90" r="1" fill="#3a2418" />
           <g className="room-pulse" style={{ transformOrigin: "35px 70px" }}>
-            <circle cx="35" cy="70" r="9.5" fill="none" stroke="#b8893a" strokeWidth="0.6" opacity="0.5" />
+            <circle
+              cx="35"
+              cy="70"
+              r="9.5"
+              fill="none"
+              stroke="#b8893a"
+              strokeWidth="0.6"
+              opacity="0.5"
+            />
           </g>
         </svg>
       );

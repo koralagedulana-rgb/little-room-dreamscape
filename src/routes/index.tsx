@@ -48,6 +48,7 @@ const PANEL_OF: Partial<Record<ItemType, Panel>> = {
   shelf: "shelf",
   corkboard: "corkboard",
   inbox: "inbox",
+  speaker: "music",
 };
 const GROUPS = ["Wall", "Furniture", "Decor"] as const;
 
@@ -299,6 +300,9 @@ function Builder() {
                     <Badge n={org.data.tasks.filter((t) => !t.done).length} />
                   )}
                   {it.type === "shelf" && <Badge n={org.data.files.length} />}
+                  {it.type === "speaker" && org.data.tracks.length > 0 && (
+                    <Badge n={org.data.tracks.length} />
+                  )}
                 </div>
               );
             })}
@@ -389,7 +393,9 @@ function Builder() {
                     ? "files"
                     : selected.type === "inbox"
                       ? "tasks"
-                      : "notes"}
+                      : selected.type === "speaker"
+                        ? "music"
+                        : "notes"}
                 </button>
               )}
               <label className="mb-3 block text-sm text-muted-foreground">

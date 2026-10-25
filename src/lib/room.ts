@@ -20,7 +20,8 @@ export type ItemType =
   | "cactus"
   | "hangingplant"
   | "bookrow"
-  | "openbook";
+  | "openbook"
+  | "speaker";
 
 export interface RoomItem {
   id: string;
@@ -59,6 +60,7 @@ export const CATALOG: Record<
   hangingplant: { label: "Hanging plant", w: 8, ratio: 1.8, group: "Wall" },
   cat: { label: "Sleeping cat", w: 9, ratio: 0.55, group: "Decor" },
   trash: { label: "Wastebasket", w: 6, ratio: 1.2, group: "Decor" },
+  speaker: { label: "Vintage speaker", w: 7, ratio: 1.45, group: "Furniture" },
 };
 
 export const THEMES = [
@@ -97,6 +99,7 @@ export const DEFAULT_ITEMS: RoomItem[] = [
   mk("plant", 9, 92, 6),
   mk("cat", 70, 95, 7),
   mk("trash", 24, 95, 6),
+  mk("speaker", 78, 92, 6),
 ];
 
 export const STORAGE_KEY = "cozy-room-v1";

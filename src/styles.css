@@ -201,6 +201,8 @@
 @keyframes spin { to { transform: rotate(360deg) } }
 .room-second { animation: spin 60s steps(60) infinite; }
 .room-twinkle { animation: bulb 4s ease-in-out infinite; }
+@keyframes pulse { 0% { opacity: 0.2; r: 9 } 50% { opacity: 0.6; r: 12 } 100% { opacity: 0.2; r: 9 } }
+.room-pulse { animation: pulse 2.4s ease-in-out infinite; }
 
 /* Sticky notes */
 .note-yellow { background: oklch(0.92 0.13 98); color: oklch(0.32 0.06 80); }

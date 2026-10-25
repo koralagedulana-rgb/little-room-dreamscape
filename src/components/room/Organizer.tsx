@@ -1,5 +1,5 @@
 import { useRef, useState, type ReactNode } from "react";
-import { FileText, Download, Trash2, Upload, X, Plus, ImagePlus } from "lucide-react";
+import { FileText, Download, Trash2, Upload, X, Plus, ImagePlus, Play, Pause, Music2, ListMusic, ExternalLink } from "lucide-react";
 import {
   fmtSize,
   MAX_FILE_BYTES,
@@ -7,10 +7,11 @@ import {
   uid,
   type OrganizerData,
   type PinColor,
+  type Track,
 } from "@/lib/organizer";
 import { fileToResizedDataUrl } from "@/lib/image";
 
-export type Panel = "shelf" | "corkboard" | "inbox";
+export type Panel = "shelf" | "corkboard" | "inbox" | "music";
 type Props = {
   panel: Panel;
   data: OrganizerData;
@@ -25,6 +26,10 @@ const TITLES: Record<Panel, [string, string]> = {
     "Pin notes, reminders, and photos to your board. Drag an image onto the board to pin it.",
   ],
   inbox: ["Task inbox", "Drop tasks in the tray and tick them off."],
+  music: [
+    "Vintage speaker",
+    "Build a cozy playlist. Paste a YouTube or YouTube Music link to add a track.",
+  ],
 };
 
 export function OrganizerPanel({ panel, data, save, onClose }: Props) {
@@ -53,6 +58,7 @@ export function OrganizerPanel({ panel, data, save, onClose }: Props) {
         {panel === "shelf" && <Shelf data={data} save={save} />}
         {panel === "corkboard" && <Board data={data} save={save} />}
         {panel === "inbox" && <Inbox data={data} save={save} />}
+        {panel === "music" && <Music data={data} save={save} />}
       </div>
     </div>
   );
@@ -284,6 +290,150 @@ function Board({ data, save }: Sub) {
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function Music({ data, save }: Sub) {
+  const [url, setUrl] = useState("");
+  const [title, setTitle] = useState("");
+  const [err, setErr] = useState("");
+  const [current, setCurrent] = useState<string | null>(null);
+  const [playing, setPlaying] = useState(false);
+
+  const extractId = (raw: string): string | null => {
+    const u = raw.trim();
+    if (!u) return null;
+    const m = u.match(
+      /(?:youtu\.be\/|youtube\.com\/watch\?v=|music\.youtube\.com\/watch\?v=|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/,
+    );
+    return m ? (m[1] ?? null) : null;
+  };
+
+  const addTrack = () => {
+    const id = extractId(url);
+    if (!id) {
+      setErr("That doesn't look like a YouTube link. Paste a YouTube or YouTube Music URL.");
+      return;
+    }
+    const t = title.trim() || `Track ${data.tracks.length + 1}`;
+    if (
+      save({
+        ...data,
+        tracks: [...data.tracks, { id: uid(), title: t, url: id, added: Date.now() }],
+      })
+    ) {
+      setUrl("");
+      setTitle("");
+      setErr("");
+    } else {
+      setErr("Your playlist is full — remove a track first.");
+    }
+  };
+
+  const play = (t: Track) => {
+    if (current === t.url) setPlaying((p) => !p);
+    else {
+      setCurrent(t.url);
+      setPlaying(true);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <input
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="Paste a YouTube or YouTube Music link…"
+          className="w-full rounded-xl border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+        />
+        <div className="flex gap-2">
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Title (optional)"
+            className="flex-1 rounded-xl border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+          />
+          <button
+            onClick={addTrack}
+            className="flex items-center gap-1 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+          >
+            <Plus className="h-4 w-4" /> Add
+          </button>
+        </div>
+      </div>
+      {err && <p className="text-sm text-destructive">{err}</p>}
+      {current && (
+        <div className="overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
+          <div className="aspect-video w-full bg-black">
+            <iframe
+              key={current}
+              src={`https://www.youtube.com/embed/${current}?autoplay=1&rel=0`}
+              title="Now playing"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="h-full w-full"
+            />
+          </div>
+        </div>
+      )}
+      {data.tracks.length === 0 ? (
+        <Empty>
+          <span className="flex items-center justify-center gap-1.5">
+            <ListMusic className="h-4 w-4" /> No tracks yet. Add a YouTube link to start your playlist.
+          </span>
+        </Empty>
+      ) : (
+        <div className="space-y-2">
+          <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <ListMusic className="h-3.5 w-3.5" /> Playlist · {data.tracks.length}
+          </div>
+          <ul className="space-y-1.5">
+            {data.tracks.map((t) => {
+              const active = current === t.url;
+              return (
+                <li
+                  key={t.id}
+                  className={`group flex items-center gap-3 rounded-xl px-3 py-2 ${active ? "bg-primary/10 ring-1 ring-primary/30" : "bg-secondary"}`}
+                >
+                  <button
+                    aria-label={active && playing ? "Pause" : "Play"}
+                    onClick={() => play(t)}
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
+                  >
+                    {active && playing ? (
+                      <Pause className="h-4 w-4" />
+                    ) : (
+                      <Play className="h-4 w-4 translate-x-0.5" />
+                    )}
+                  </button>
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium">{t.title}</span>
+                  <a
+                    href={`https://music.youtube.com/watch?v=${t.url}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Open in YouTube Music"
+                    className="rounded-lg p-1.5 text-muted-foreground hover:bg-background hover:text-foreground"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                  <button
+                    aria-label="Remove track"
+                    onClick={() => save({ ...data, tracks: data.tracks.filter((x) => x.id !== t.id) })}
+                    className="rounded-lg p-1.5 text-destructive opacity-0 hover:bg-background group-hover:opacity-100"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+      <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Music2 className="h-3.5 w-3.5" /> YouTube Music links play the same track in the embedded player above.
+      </p>
     </div>
   );
 }

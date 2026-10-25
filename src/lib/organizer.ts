@@ -1,12 +1,33 @@
 import { useEffect, useState } from "react";
 
-export interface ShelfFile { id: string; name: string; size: number; type: string; data: string; added: number }
-export interface Pin { id: string; text: string; color: PinColor; added: number }
-export interface Task { id: string; text: string; done: boolean; added: number }
+export interface ShelfFile {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  data: string;
+  added: number;
+}
+export interface Pin {
+  id: string;
+  text: string;
+  color: PinColor;
+  added: number;
+}
+export interface Task {
+  id: string;
+  text: string;
+  done: boolean;
+  added: number;
+}
 export type PinColor = "yellow" | "pink" | "blue" | "green";
 export const PIN_COLORS: PinColor[] = ["yellow", "pink", "blue", "green"];
 
-export interface OrganizerData { files: ShelfFile[]; pins: Pin[]; tasks: Task[] }
+export interface OrganizerData {
+  files: ShelfFile[];
+  pins: Pin[];
+  tasks: Task[];
+}
 const KEY = "cozy-organizer-v1";
 export const MAX_FILE_BYTES = 1_000_000;
 
@@ -17,7 +38,9 @@ export function useOrganizer() {
     try {
       const s = JSON.parse(localStorage.getItem(KEY) || "null");
       if (s) setData({ files: s.files ?? [], pins: s.pins ?? [], tasks: s.tasks ?? [] });
-    } catch {}
+    } catch {
+      // corrupt or missing storage — start fresh
+    }
     setLoaded(true);
   }, []);
   const save = (next: OrganizerData) => {
@@ -33,4 +56,9 @@ export function useOrganizer() {
 }
 
 export const uid = () => crypto.randomUUID();
-export const fmtSize = (b: number) => (b < 1024 ? `${b} B` : b < 1048576 ? `${(b / 1024).toFixed(0)} KB` : `${(b / 1048576).toFixed(1)} MB`);
+export const fmtSize = (b: number) =>
+  b < 1024
+    ? `${b} B`
+    : b < 1048576
+      ? `${(b / 1024).toFixed(0)} KB`
+      : `${(b / 1048576).toFixed(1)} MB`;

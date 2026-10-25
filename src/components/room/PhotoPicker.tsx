@@ -2,7 +2,13 @@ import { useRef, useState } from "react";
 import { ImagePlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function PhotoPicker({ photo, onChange }: { photo?: string | undefined; onChange: (photo?: string) => boolean }) {
+export function PhotoPicker({
+  photo,
+  onChange,
+}: {
+  photo?: string | undefined;
+  onChange: (photo?: string) => boolean;
+}) {
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -40,16 +46,49 @@ export function PhotoPicker({ photo, onChange }: { photo?: string | undefined; o
 
   return (
     <div className="mb-4 space-y-2">
-      <input ref={input} type="file" accept="image/*" aria-label="Choose frame photo" className="hidden"
-        onChange={(e) => { void choose(e.target.files?.[0]); e.target.value = ""; }} />
+      <input
+        ref={input}
+        type="file"
+        accept="image/*"
+        aria-label="Choose frame photo"
+        className="hidden"
+        onChange={(e) => {
+          void choose(e.target.files?.[0]);
+          e.target.value = "";
+        }}
+      />
       <div className="flex gap-2">
-        <Button variant="outline" className="flex-1" disabled={busy} onClick={() => input.current?.click()}>
-          <ImagePlus />{busy ? "Adding photo…" : photo ? "Replace photo" : "Add photo"}
+        <Button
+          variant="outline"
+          className="flex-1"
+          disabled={busy}
+          onClick={() => input.current?.click()}
+        >
+          <ImagePlus />
+          {busy ? "Adding photo…" : photo ? "Replace photo" : "Add photo"}
         </Button>
-        {photo && <Button variant="ghost" size="icon" aria-label="Remove photo" title="Remove photo" disabled={busy}
-          onClick={() => { setError(onChange(undefined) ? "" : "The photo couldn’t be removed. Please try again."); }}><Trash2 /></Button>}
+        {photo && (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Remove photo"
+            title="Remove photo"
+            disabled={busy}
+            onClick={() => {
+              setError(
+                onChange(undefined) ? "" : "The photo couldn’t be removed. Please try again.",
+              );
+            }}
+          >
+            <Trash2 />
+          </Button>
+        )}
       </div>
-      {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+      {error && (
+        <p role="alert" className="text-sm text-destructive">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

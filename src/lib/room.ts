@@ -1,7 +1,26 @@
 export type ItemType =
-  | "window" | "lights" | "corkboard" | "calendar" | "clock" | "frame" | "shelf"
-  | "desk" | "monitor" | "lamp" | "mug" | "inbox" | "plant" | "cat" | "rug" | "trash" | "books"
-  | "monstera" | "cactus" | "hangingplant" | "bookrow" | "openbook";
+  | "window"
+  | "lights"
+  | "corkboard"
+  | "calendar"
+  | "clock"
+  | "frame"
+  | "shelf"
+  | "desk"
+  | "monitor"
+  | "lamp"
+  | "mug"
+  | "inbox"
+  | "plant"
+  | "cat"
+  | "rug"
+  | "trash"
+  | "books"
+  | "monstera"
+  | "cactus"
+  | "hangingplant"
+  | "bookrow"
+  | "openbook";
 
 export interface RoomItem {
   id: string;
@@ -14,7 +33,10 @@ export interface RoomItem {
   photo?: string | undefined;
 }
 
-export const CATALOG: Record<ItemType, { label: string; w: number; ratio: number; group: "Wall" | "Furniture" | "Decor" }> = {
+export const CATALOG: Record<
+  ItemType,
+  { label: string; w: number; ratio: number; group: "Wall" | "Furniture" | "Decor" }
+> = {
   window: { label: "Window", w: 16, ratio: 1.1, group: "Wall" },
   lights: { label: "String lights", w: 46, ratio: 0.12, group: "Wall" },
   corkboard: { label: "Corkboard", w: 20, ratio: 0.72, group: "Wall" },
@@ -50,7 +72,13 @@ export type ThemeId = (typeof THEMES)[number]["id"];
 
 let n = 0;
 const mk = (type: ItemType, x: number, y: number, z: number, scale = 1): RoomItem => ({
-  id: `d${n++}`, type, x, y, scale, flip: false, z,
+  id: `d${n++}`,
+  type,
+  x,
+  y,
+  scale,
+  flip: false,
+  z,
 });
 
 export const DEFAULT_ITEMS: RoomItem[] = [

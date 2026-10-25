@@ -1,5 +1,5 @@
 import { useRef, useState, type ReactNode } from "react";
-import { FileText, Download, Trash2, Upload, X, Plus } from "lucide-react";
+import { FileText, Download, Trash2, Upload, X, Plus, ImagePlus } from "lucide-react";
 import {
   fmtSize,
   MAX_FILE_BYTES,
@@ -8,6 +8,7 @@ import {
   type OrganizerData,
   type PinColor,
 } from "@/lib/organizer";
+import { fileToResizedDataUrl } from "@/lib/image";
 
 export type Panel = "shelf" | "corkboard" | "inbox";
 type Props = {
@@ -19,7 +20,10 @@ type Props = {
 
 const TITLES: Record<Panel, [string, string]> = {
   shelf: ["File shelf", "Keep small files tucked away on your bookshelf."],
-  corkboard: ["Corkboard", "Pin notes and reminders to your board."],
+  corkboard: [
+    "Corkboard",
+    "Pin notes, reminders, and photos to your board. Drag an image onto the board to pin it.",
+  ],
   inbox: ["Task inbox", "Drop tasks in the tray and tick them off."],
 };
 
@@ -149,6 +153,8 @@ function Board({ data, save }: Sub) {
   const [text, setText] = useState("");
   const [color, setColor] = useState<PinColor>("yellow");
   const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const add = () => {
     if (!text.trim()) return;
     if (
@@ -161,6 +167,29 @@ function Board({ data, save }: Sub) {
       setErr("");
     } else {
       setErr("Your board is full — remove a note first.");
+    }
+  };
+  const onImage = async (file?: File) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setErr("Please choose a picture (JPG, PNG, or WebP).");
+      return;
+    }
+    setBusy(true);
+    setErr("");
+    try {
+      const img = await fileToResizedDataUrl(file, 320);
+      if (
+        !save({
+          ...data,
+          pins: [{ id: uid(), text: "", color, added: Date.now(), image: img }, ...data.pins],
+        })
+      )
+        setErr("Your board is full — remove a pin first.");
+    } catch {
+      setErr("That picture couldn't be opened. Try a JPG, PNG, or WebP image.");
+    } finally {
+      setBusy(false);
     }
   };
   return (
@@ -190,29 +219,69 @@ function Board({ data, save }: Sub) {
             <Plus className="h-4 w-4" /> Pin it
           </button>
         </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => fileRef.current?.click()}
+            disabled={busy}
+            className="flex items-center gap-1 rounded-xl bg-secondary px-3 py-1.5 text-xs font-semibold text-secondary-foreground hover:bg-secondary/80 disabled:opacity-60"
+          >
+            <ImagePlus className="h-3.5 w-3.5" /> {busy ? "Pinning…" : "Pin a photo"}
+          </button>
+          <span className="text-xs text-muted-foreground">
+            Or drag an image straight onto the board in the room.
+          </span>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={(e) => {
+              void onImage(e.target.files?.[0]);
+              e.target.value = "";
+            }}
+          />
+        </div>
       </div>
       {err && <p className="text-sm text-destructive">{err}</p>}
       {data.pins.length === 0 ? (
         <Empty>Your board is empty.</Empty>
       ) : (
         <div className="grid grid-cols-2 gap-3 rounded-2xl bg-[oklch(0.72_0.08_65)] p-3">
-          {data.pins.map((p, i) => (
-            <div
-              key={p.id}
-              className={`note-${p.color} group relative min-h-20 p-3 pt-4 font-hand text-lg leading-tight shadow-md`}
-              style={{ transform: `rotate(${(i % 3) - 1}deg)` }}
-            >
-              <span className="absolute left-1/2 top-1 h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-destructive" />
-              {p.text}
-              <button
-                aria-label="Unpin"
-                onClick={() => save({ ...data, pins: data.pins.filter((x) => x.id !== p.id) })}
-                className="absolute right-1 top-1 rounded p-0.5 opacity-0 group-hover:opacity-100"
+          {data.pins.map((p, i) =>
+            p.image ? (
+              <div
+                key={p.id}
+                className="group relative overflow-hidden rounded-md bg-[oklch(0.75_0.08_65)] shadow-md"
+                style={{ transform: `rotate(${(i % 3) - 1}deg)` }}
               >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          ))}
+                <img src={p.image} alt="" className="h-full w-full object-cover" />
+                <span className="absolute left-1/2 top-1 h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-destructive" />
+                <button
+                  aria-label="Unpin"
+                  onClick={() => save({ ...data, pins: data.pins.filter((x) => x.id !== p.id) })}
+                  className="absolute right-1 top-1 rounded bg-background/80 p-0.5 opacity-0 group-hover:opacity-100"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ) : (
+              <div
+                key={p.id}
+                className={`note-${p.color} group relative min-h-20 p-3 pt-4 font-hand text-lg leading-tight shadow-md`}
+                style={{ transform: `rotate(${(i % 3) - 1}deg)` }}
+              >
+                <span className="absolute left-1/2 top-1 h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-destructive" />
+                {p.text}
+                <button
+                  aria-label="Unpin"
+                  onClick={() => save({ ...data, pins: data.pins.filter((x) => x.id !== p.id) })}
+                  className="absolute right-1 top-1 rounded p-0.5 opacity-0 group-hover:opacity-100"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ),
+          )}
         </div>
       )}
     </div>

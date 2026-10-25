@@ -1,11 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type PointerEvent as RPE } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type DragEvent as RDE,
+  type PointerEvent as RPE,
+} from "react";
 import { PanelRightOpen, PanelRightClose, Lock, LockOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ItemArt } from "@/components/room/ItemArt";
 import { PhotoPicker } from "@/components/room/PhotoPicker";
 import { OrganizerPanel, type Panel } from "@/components/room/Organizer";
-import { useOrganizer } from "@/lib/organizer";
+import { useOrganizer, uid, type OrganizerData } from "@/lib/organizer";
+import { fileToResizedDataUrl } from "@/lib/image";
 import {
   CATALOG,
   DEFAULT_ITEMS,
@@ -52,6 +59,9 @@ function Builder() {
   const [loaded, setLoaded] = useState(false);
   const [locked, setLocked] = useState(false);
   const [panel, setPanel] = useState<Panel | null>(null);
+  const [dropBusy, setDropBusy] = useState(false);
+  const [dropErr, setDropErr] = useState("");
+  const [dropTarget, setDropTarget] = useState<string | null>(null);
   const org = useOrganizer();
   const roomRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{
@@ -101,6 +111,30 @@ function Builder() {
     };
     setItems((a) => [...a, it]);
     setSel(it.id);
+  };
+
+  const pinImageToBoard = async (file: File) => {
+    setDropErr("");
+    if (!file.type.startsWith("image/")) {
+      setDropErr("That wasn't a picture. Drop an image file (JPG, PNG, or WebP).");
+      return;
+    }
+    setDropBusy(true);
+    try {
+      const data = await fileToResizedDataUrl(file, 320);
+      const next: OrganizerData = {
+        ...org.data,
+        pins: [
+          { id: uid(), text: "", color: "yellow", added: Date.now(), image: data },
+          ...org.data.pins,
+        ],
+      };
+      if (!org.save(next)) setDropErr("Your board is full — remove a pin first.");
+    } catch {
+      setDropErr("That picture couldn't be opened. Try a JPG, PNG, or WebP image.");
+    } finally {
+      setDropBusy(false);
+    }
   };
 
   const onDown = (e: RPE, it: RoomItem) => {
@@ -192,7 +226,30 @@ function Builder() {
                   key={it.id}
                   aria-label={c.label}
                   onPointerDown={(e) => onDown(e, it)}
-                  className={`absolute ${locked ? "cursor-pointer" : "cursor-grab active:cursor-grabbing"} ${sel === it.id ? "outline-2 outline-dashed outline-offset-4 outline-[var(--room-ink)] rounded" : ""}`}
+                  onDragOver={
+                    it.type === "corkboard"
+                      ? (e: RDE) => {
+                          e.preventDefault();
+                          setDropTarget(it.id);
+                        }
+                      : undefined
+                  }
+                  onDragLeave={
+                    it.type === "corkboard"
+                      ? () => setDropTarget((t) => (t === it.id ? null : t))
+                      : undefined
+                  }
+                  onDrop={
+                    it.type === "corkboard"
+                      ? async (e: RDE) => {
+                          e.preventDefault();
+                          setDropTarget(null);
+                          const f = e.dataTransfer.files?.[0];
+                          if (f) await pinImageToBoard(f);
+                        }
+                      : undefined
+                  }
+                  className={`absolute ${locked ? "cursor-pointer" : "cursor-grab active:cursor-grabbing"} ${sel === it.id ? "outline-2 outline-dashed outline-offset-4 outline-[var(--room-ink)] rounded" : ""} ${dropTarget === it.id ? "ring-4 ring-primary/60 rounded" : ""}`}
                   style={{
                     left: `${it.x}%`,
                     top: `${it.y}%`,
@@ -208,18 +265,34 @@ function Builder() {
                   <ItemArt type={it.type} photo={it.photo} />
                   {it.type === "corkboard" && org.data.pins.length > 0 && (
                     <div className="pointer-events-none absolute inset-[6%] grid grid-cols-3 content-start gap-[4%] bg-[oklch(0.75_0.08_65)] p-[4%]">
-                      {org.data.pins.slice(0, 6).map((p, i) => (
-                        <div
-                          key={p.id}
-                          className={`note-${p.color} aspect-square overflow-hidden p-[6%] font-hand leading-none shadow`}
-                          style={{
-                            fontSize: `${0.7 * it.scale}vw`,
-                            transform: `rotate(${((i % 3) - 1) * 2}deg)`,
-                          }}
-                        >
-                          {p.text}
-                        </div>
-                      ))}
+                      {org.data.pins.slice(0, 6).map((p, i) =>
+                        p.image ? (
+                          <div
+                            key={p.id}
+                            className="relative aspect-square overflow-hidden bg-[oklch(0.75_0.08_65)] shadow"
+                            style={{ transform: `rotate(${((i % 3) - 1) * 3}deg)` }}
+                          >
+                            <img src={p.image} alt="" className="h-full w-full object-cover" />
+                            <span className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 rounded-full bg-destructive shadow" />
+                          </div>
+                        ) : (
+                          <div
+                            key={p.id}
+                            className={`note-${p.color} aspect-square overflow-hidden p-[6%] font-hand leading-none shadow`}
+                            style={{
+                              fontSize: `${0.7 * it.scale}vw`,
+                              transform: `rotate(${((i % 3) - 1) * 2}deg)`,
+                            }}
+                          >
+                            {p.text}
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  )}
+                  {it.type === "corkboard" && (dropBusy || dropErr) && (
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded bg-background/70 text-center text-[0.6em] font-semibold text-foreground">
+                      {dropBusy ? "Pinning photo…" : dropErr}
                     </div>
                   )}
                   {it.type === "inbox" && (

@@ -13,6 +13,7 @@ export interface Pin {
   text: string;
   color: PinColor;
   added: number;
+  image?: string;
 }
 export interface Task {
   id: string;

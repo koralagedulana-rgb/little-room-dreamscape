@@ -559,6 +559,164 @@ export function ItemArt({ type, photo }: { type: ItemType; photo?: string | unde
           ))}
         </svg>
       );
+    case "candles":
+      return (
+        <svg viewBox="0 0 80 88" className="h-full w-full overflow-visible">
+          <ellipse cx="40" cy="84" rx="36" ry="4" fill="#6b5a2e" />
+          {[
+            [18, 40, 9],
+            [40, 26, 10],
+            [61, 48, 8],
+          ].map(([x, top, w], i) => (
+            <g key={i}>
+              <circle cx={x} cy={top! - 9} r="10" fill="#ffc46b" opacity="0.25" className="room-flicker" />
+              <rect x={x! - w!} y={top} width={w! * 2} height={82 - top!} rx="2" fill="#e8dcc0" />
+              <path d={`M${x! - w!} ${top! + 3} q4 4 3 9`} stroke="#d6c7a4" strokeWidth="2" fill="none" />
+              <line x1={x} y1={top} x2={x} y2={top! - 4} stroke="#2a1c12" strokeWidth="1" />
+              <path
+                d={`M${x} ${top! - 14} q4 6 0 10 q-4 -4 0 -10z`}
+                fill="#ffb347"
+                className="room-flicker"
+                style={{ transformOrigin: `${x}px ${top! - 4}px` }}
+              />
+              <path d={`M${x} ${top! - 10} q1.6 3 0 5 q-1.6 -2 0 -5z`} fill="#fff1c4" />
+            </g>
+          ))}
+        </svg>
+      );
+    case "lantern":
+      return (
+        <svg viewBox="0 0 50 85" className="h-full w-full overflow-visible">
+          <circle cx="25" cy="48" r="26" fill="#ffc46b" opacity="0.18" className="room-flicker" />
+          <path d="M18 8 Q25 0 32 8" stroke="#b8893a" strokeWidth="2" fill="none" />
+          <path d="M10 20 L25 9 L40 20Z" fill="#8a6428" />
+          <rect x="12" y="20" width="26" height="52" fill="#ffd98a" opacity="0.55" />
+          <rect x="12" y="20" width="26" height="52" fill="none" stroke="#8a6428" strokeWidth="2.5" />
+          <line x1="25" y1="20" x2="25" y2="72" stroke="#8a6428" strokeWidth="1.5" />
+          <rect x="21" y="48" width="8" height="18" rx="1" fill="#efe3c6" />
+          <path d="M25 37 q4 5 0 10 q-4 -5 0 -10z" fill="#ffb347" className="room-flicker" style={{ transformOrigin: "25px 47px" }} />
+          <rect x="8" y="72" width="34" height="7" rx="1" fill="#6b4a1e" />
+        </svg>
+      );
+    case "glowjar":
+      return (
+        <svg viewBox="0 0 50 70" className="h-full w-full overflow-visible">
+          <circle cx="25" cy="42" r="26" fill="#ffd27a" opacity="0.2" className="room-bulb" />
+          <rect x="14" y="4" width="22" height="8" rx="2" fill="#8a6428" />
+          <path d="M12 14 Q10 12 14 12 H36 Q40 12 38 14 Q44 22 44 40 V60 Q44 68 36 68 H14 Q6 68 6 60 V40 Q6 22 12 14Z" fill="#cfe3d6" opacity="0.35" stroke="#a8c3b2" strokeWidth="1.2" />
+          {[
+            [16, 30], [30, 26], [24, 40], [36, 46], [14, 52], [28, 58], [20, 22], [34, 36],
+          ].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r="1.8" fill="#fff0a8" className="room-bulb" style={{ animationDelay: `${i * 0.3}s` }} />
+          ))}
+          <path d="M14 16 Q24 30 18 44 Q12 56 30 62" stroke="#c9a66b" strokeWidth="0.6" fill="none" />
+        </svg>
+      );
+    case "vinelights":
+      return (
+        <svg viewBox="0 0 400 88" className="h-full w-full overflow-visible">
+          <path d="M0 10 Q100 70 200 30 T400 14" stroke="#2f4a2a" strokeWidth="2" fill="none" />
+          {Array.from({ length: 22 }, (_, i) => {
+            const t = i / 21;
+            const x = t * 400;
+            const y = 10 + Math.sin(t * Math.PI * 2.1) * -26 + 26 + (t < 0.5 ? 10 : -6) * Math.sin(t * Math.PI);
+            return (
+              <g key={i}>
+                <ellipse cx={x + 4} cy={y + 4} rx="6" ry="3" fill={i % 2 ? "#3e6b34" : "#2f5a2a"} transform={`rotate(${i % 2 ? 30 : -30} ${x + 4} ${y + 4})`} />
+                {i % 2 === 0 && (
+                  <>
+                    <circle cx={x} cy={y + 9} r="7" fill="#ffd27a" opacity="0.25" />
+                    <circle cx={x} cy={y + 9} r="2.6" fill="#ffe7a3" className="room-bulb" style={{ animationDelay: `${i * 0.2}s` }} />
+                  </>
+                )}
+              </g>
+            );
+          })}
+        </svg>
+      );
+    case "pothos":
+      return (
+        <svg viewBox="0 0 80 128" className="h-full w-full overflow-visible">
+          <path d="M18 26 H62 L58 50 H22Z" fill="#7a4a2a" />
+          <rect x="15" y="22" width="50" height="6" rx="2" fill="#8f5a34" />
+          {[
+            [24, 50, 108, -1], [36, 50, 124, 0], [50, 50, 116, 1], [60, 44, 96, 1], [18, 40, 90, -1],
+          ].map(([x, y0, y1, d], i) => (
+            <g key={i} className="room-sway" style={{ transformOrigin: `${x}px ${y0}px`, animationDelay: `${i * 0.5}s` }}>
+              <path d={`M${x} ${y0} Q${x! + d! * 8} ${(y0! + y1!) / 2} ${x! + d! * 3} ${y1}`} stroke="#3e5c2a" strokeWidth="1.2" fill="none" />
+              {Array.from({ length: 6 }, (_, j) => {
+                const ty = y0! + ((y1! - y0!) * (j + 1)) / 7;
+                const tx = x! + d! * 6 * Math.sin((j / 6) * Math.PI) + (j % 2 ? 4 : -4);
+                return <path key={j} d={`M${tx} ${ty} q5 -6 9 0 q-4 6 -9 0z`} fill={j % 2 ? "#4f8a3a" : "#6aa84a"} transform={`rotate(${j % 2 ? 20 : 160} ${tx} ${ty})`} />;
+              })}
+            </g>
+          ))}
+          {[[22, 20], [32, 12], [44, 10], [56, 16], [62, 24], [28, 24], [50, 22]].map(([x, y], i) => (
+            <path key={i} d={`M${x} ${y} q7 -8 12 0 q-6 8 -12 0z`} fill={i % 2 ? "#4f8a3a" : "#6aa84a"} transform={`rotate(${i * 25 - 60} ${x} ${y})`} />
+          ))}
+        </svg>
+      );
+    case "fern":
+      return (
+        <svg viewBox="0 0 100 110" className="h-full w-full overflow-visible">
+          {[-70, -45, -20, 0, 20, 45, 70].map((a, i) => (
+            <g key={i} transform={`rotate(${a} 50 70)`} className="room-sway" style={{ transformOrigin: "50px 70px", animationDelay: `${i * 0.4}s` }}>
+              <path d="M50 70 Q48 40 50 8" stroke="#2f5a2a" strokeWidth="1.4" fill="none" />
+              {Array.from({ length: 10 }, (_, j) => {
+                const y = 66 - j * 6;
+                const l = 10 - j * 0.8;
+                return (
+                  <g key={j}>
+                    <path d={`M50 ${y} q${-l / 2} -4 ${-l} -1`} stroke={j % 2 ? "#4f8a3a" : "#5f9a44"} strokeWidth="2.4" fill="none" strokeLinecap="round" />
+                    <path d={`M50 ${y} q${l / 2} -4 ${l} -1`} stroke={j % 2 ? "#5f9a44" : "#4f8a3a"} strokeWidth="2.4" fill="none" strokeLinecap="round" />
+                  </g>
+                );
+              })}
+            </g>
+          ))}
+          <path d="M30 72 H70 L65 106 H35Z" fill="#5a3a24" />
+          <rect x="27" y="68" width="46" height="7" rx="2" fill="#6a4428" />
+        </svg>
+      );
+    case "snakeplant":
+      return (
+        <svg viewBox="0 0 60 114" className="h-full w-full overflow-visible">
+          {[
+            [18, 20, -8], [26, 4, -2], [34, 10, 4], [42, 26, 10], [30, 30, 0],
+          ].map(([x, top, lean], i) => (
+            <g key={i}>
+              <path d={`M${x! - 4} 80 Q${x! + lean! / 2 - 5} ${(80 + top!) / 2} ${x! + lean!} ${top} Q${x! + lean! / 2 + 6} ${(80 + top!) / 2} ${x! + 4} 80Z`} fill={i % 2 ? "#3d6b3a" : "#2f5a32"} />
+              <path d={`M${x} 78 Q${x! + lean! / 2} ${(80 + top!) / 2} ${x! + lean!} ${top! + 6}`} stroke="#b8c76a" strokeWidth="0.8" fill="none" opacity="0.6" />
+            </g>
+          ))}
+          <path d="M12 78 H48 L44 110 H16Z" fill="#2a2a2a" />
+          <rect x="10" y="76" width="40" height="5" rx="2" fill="#3a3a3a" />
+        </svg>
+      );
+    case "ivy":
+      return (
+        <svg viewBox="0 0 140 182" className="h-full w-full overflow-visible">
+          {[
+            "M10 0 Q30 60 18 120 Q10 160 26 180",
+            "M50 0 Q60 50 44 90 Q34 130 52 150",
+            "M95 0 Q80 40 96 80 Q110 120 90 170",
+            "M130 0 Q120 30 128 70 Q134 100 118 120",
+          ].map((d, i) => (
+            <g key={i} className="room-sway" style={{ transformOrigin: "70px 0px", animationDelay: `${i * 0.7}s` }}>
+              <path d={d} stroke="#3a4f2a" strokeWidth="1.4" fill="none" />
+            </g>
+          ))}
+          {Array.from({ length: 46 }, (_, i) => {
+            const col = i % 4;
+            const xs = [14, 48, 92, 126];
+            const y = (Math.floor(i / 4) * 15 + col * 5) % 175;
+            const x = xs[col]! + Math.sin(y / 18 + col) * 10;
+            return (
+              <path key={i} d={`M${x} ${y} l5 -5 l4 4 l5 -2 l-3 6 l3 5 l-7 0 l-3 4 l-2 -5 l-5 -2z`} fill={i % 3 === 0 ? "#2f5a2a" : i % 3 === 1 ? "#4f8a3a" : "#3e6b34"} transform={`rotate(${(i * 47) % 360} ${x + 5} ${y})`} />
+            );
+          })}
+        </svg>
+      );
     case "speaker":
       return (
         <svg viewBox="0 0 70 100" className="h-full w-full">

@@ -198,6 +198,8 @@
 .room-steam { animation: steam 3s ease-in-out infinite; }
 @keyframes sway { 50% { transform: rotate(2deg) } }
 .room-sway { animation: sway 5s ease-in-out infinite; }
+@keyframes flicker { 0%,100% { opacity: 1; transform: scale(1) } 30% { opacity: .8; transform: scale(.94, 1.05) } 60% { opacity: .95; transform: scale(1.04, .97) } }
+.room-flicker { animation: flicker 1.6s ease-in-out infinite; transform-box: fill-box; }
 @keyframes spin { to { transform: rotate(360deg) } }
 .room-second { animation: spin 60s steps(60) infinite; }
 .room-twinkle { animation: bulb 4s ease-in-out infinite; }

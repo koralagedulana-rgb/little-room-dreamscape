@@ -26,6 +26,7 @@ import {
   type Track,
 } from "@/lib/organizer";
 import { fileToResizedDataUrl } from "@/lib/image";
+import { isList, usePlayer } from "@/components/room/player";
 
 export type Panel = "shelf" | "corkboard" | "inbox" | "music";
 type Props = {
@@ -314,20 +315,8 @@ function Music({ data, save }: Sub) {
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [err, setErr] = useState("");
-  const [current, setCurrent] = useState<string | null>(null);
-  const [playing, setPlaying] = useState(false);
-  const [volume, setVolume] = useState(() => {
-    if (typeof window === "undefined") return 70;
-    const v = Number(window.localStorage.getItem("cozy-volume"));
-    return Number.isFinite(v) && v > 0 ? v : 70;
-  });
-  const frameRef = useRef<HTMLIFrameElement>(null);
-
-  const cmd = (func: string, args: unknown[] = []) =>
-    frameRef.current?.contentWindow?.postMessage(
-      JSON.stringify({ event: "command", func, args }),
-      "*",
-    );
+  const player = usePlayer();
+  const { current, playing, volume } = player;
 
   const extractId = (raw: string): string | null => {
     const u = raw.trim();
@@ -336,14 +325,9 @@ function Music({ data, save }: Sub) {
     const v = u.match(
       /(?:youtu\.be\/|[?&]v=|youtube\.com\/embed\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/,
     );
-    if (list && !v) return `list:${list[1]}`;
-    return v ? (v[1] ?? null) : list ? `list:${list[1]}` : null;
+    if (v) return v[1] ?? null;
+    return list ? `list:${list[1]}` : null;
   };
-  const isList = (k: string) => k.startsWith("list:");
-  const embedSrc = (k: string) =>
-    isList(k)
-      ? `https://www.youtube.com/embed/videoseries?list=${k.slice(5)}&autoplay=1&enablejsapi=1&rel=0`
-      : `https://www.youtube.com/embed/${k}?autoplay=1&enablejsapi=1&rel=0`;
   const openHref = (k: string) =>
     isList(k)
       ? `https://music.youtube.com/playlist?list=${k.slice(5)}`
@@ -367,16 +351,6 @@ function Music({ data, save }: Sub) {
       setErr("");
     } else {
       setErr("Your playlist is full — remove a track first.");
-    }
-  };
-
-  const play = (t: Track) => {
-    if (current === t.url) {
-      cmd(playing ? "pauseVideo" : "playVideo");
-      setPlaying(!playing);
-    } else {
-      setCurrent(t.url);
-      setPlaying(true);
     }
   };
 
@@ -406,58 +380,35 @@ function Music({ data, save }: Sub) {
       </div>
       {err && <p className="text-sm text-destructive">{err}</p>}
       {current && (
-        <div className="overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
-          <div className="aspect-video w-full bg-black">
-            <iframe
-              ref={frameRef}
-              key={current}
-              onLoad={() => setTimeout(() => cmd("setVolume", [volume]), 600)}
-              src={embedSrc(current)}
-              title="Now playing"
-              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="h-full w-full"
-            />
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2">
-            {isList(current) && (
-              <button aria-label="Previous" onClick={() => cmd("previousVideo")} className="rounded-lg p-1.5 hover:bg-secondary">
-                <SkipBack className="h-4 w-4" />
-              </button>
-            )}
-            <button
-              aria-label={playing ? "Pause" : "Play"}
-              onClick={() => {
-                cmd(playing ? "pauseVideo" : "playVideo");
-                setPlaying(!playing);
-              }}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground"
-            >
-              {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-0.5" />}
+        <div className="flex items-center gap-2 rounded-2xl border border-border bg-background px-3 py-2 shadow-sm">
+          {isList(current) && (
+            <button aria-label="Previous" onClick={player.prev} className="rounded-lg p-1.5 hover:bg-secondary">
+              <SkipBack className="h-4 w-4" />
             </button>
-            {isList(current) && (
-              <button aria-label="Next" onClick={() => cmd("nextVideo")} className="rounded-lg p-1.5 hover:bg-secondary">
-                <SkipForward className="h-4 w-4" />
-              </button>
-            )}
-            <Volume2 className="ml-2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={volume}
-              aria-label="Volume"
-              onChange={(e) => {
-                const v = Number(e.target.value);
-                setVolume(v);
-                cmd("setVolume", [v]);
-                try {
-                  window.localStorage.setItem("cozy-volume", String(v));
-                } catch {}
-              }}
-              className="flex-1 accent-[var(--primary)]"
-            />
-          </div>
+          )}
+          <button
+            aria-label={playing ? "Pause" : "Play"}
+            onClick={player.toggle}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground"
+          >
+            {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-0.5" />}
+          </button>
+          {isList(current) && (
+            <button aria-label="Next" onClick={player.next} className="rounded-lg p-1.5 hover:bg-secondary">
+              <SkipForward className="h-4 w-4" />
+            </button>
+          )}
+          <span className="min-w-0 flex-1 truncate text-sm font-medium">{player.title}</span>
+          <Volume2 className="h-4 w-4 text-muted-foreground" />
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={volume}
+            aria-label="Volume"
+            onChange={(e) => player.setVolume(Number(e.target.value))}
+            className="w-24 accent-[var(--primary)]"
+          />
         </div>
       )}
       {data.tracks.length === 0 ? (
@@ -482,7 +433,7 @@ function Music({ data, save }: Sub) {
                 >
                   <button
                     aria-label={active && playing ? "Pause" : "Play"}
-                    onClick={() => play(t)}
+                    onClick={() => player.play(t.url, t.title)}
                     className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
                   >
                     {active && playing ? (
@@ -517,8 +468,8 @@ function Music({ data, save }: Sub) {
         </div>
       )}
       <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Music2 className="h-3.5 w-3.5" /> Track and playlist links from YouTube or YouTube Music both
-        work.
+        <Music2 className="h-3.5 w-3.5" /> Music keeps playing after you close this. Hover the
+        speaker to play or pause.
       </p>
     </div>
   );

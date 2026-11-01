@@ -6,11 +6,21 @@ import {
   type DragEvent as RDE,
   type PointerEvent as RPE,
 } from "react";
-import { PanelRightOpen, PanelRightClose, Lock, LockOpen } from "lucide-react";
+import {
+  PanelRightOpen,
+  PanelRightClose,
+  Lock,
+  LockOpen,
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ItemArt } from "@/components/room/ItemArt";
 import { PhotoPicker } from "@/components/room/PhotoPicker";
 import { OrganizerPanel, type Panel } from "@/components/room/Organizer";
+import { PlayerProvider, usePlayer, isList } from "@/components/room/player";
 import { useOrganizer, uid, type OrganizerData } from "@/lib/organizer";
 import { fileToResizedDataUrl } from "@/lib/image";
 import {
@@ -41,7 +51,11 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Builder,
+  component: () => (
+    <PlayerProvider>
+      <Builder />
+    </PlayerProvider>
+  ),
 });
 
 const PANEL_OF: Partial<Record<ItemType, Panel>> = {
@@ -250,7 +264,7 @@ function Builder() {
                         }
                       : undefined
                   }
-                  className={`absolute ${locked ? "cursor-pointer" : "cursor-grab active:cursor-grabbing"} ${sel === it.id ? "outline-2 outline-dashed outline-offset-4 outline-[var(--room-ink)] rounded" : ""} ${dropTarget === it.id ? "ring-4 ring-primary/60 rounded" : ""}`}
+                  className={`group/item absolute ${locked ? "cursor-pointer" : "cursor-grab active:cursor-grabbing"} ${sel === it.id ? "outline-2 outline-dashed outline-offset-4 outline-[var(--room-ink)] rounded" : ""} ${dropTarget === it.id ? "ring-4 ring-primary/60 rounded" : ""}`}
                   style={{
                     left: `${it.x}%`,
                     top: `${it.y}%`,
@@ -302,6 +316,13 @@ function Builder() {
                   {it.type === "shelf" && <Badge n={org.data.files.length} />}
                   {it.type === "speaker" && org.data.tracks.length > 0 && (
                     <Badge n={org.data.tracks.length} />
+                  )}
+                  {it.type === "speaker" && (
+                    <SpeakerControls
+                      flip={it.flip}
+                      onOpen={() => setPanel("music")}
+                      firstTrack={org.data.tracks[0]}
+                    />
                   )}
                 </div>
               );
@@ -489,5 +510,50 @@ function Badge({ n }: { n: number }) {
     <span className="pointer-events-none absolute -right-2 -top-2 flex h-6 min-w-6 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-bold text-primary-foreground shadow">
       {n}
     </span>
+  );
+}
+
+function SpeakerControls({
+  flip,
+  onOpen,
+  firstTrack,
+}: {
+  flip: boolean;
+  onOpen: () => void;
+  firstTrack: { url: string; title: string } | undefined;
+}) {
+  const p = usePlayer();
+  const stop = (e: { stopPropagation: () => void }) => e.stopPropagation();
+  const btn =
+    "flex h-8 w-8 items-center justify-center rounded-full bg-card text-foreground shadow hover:bg-secondary";
+  return (
+    <div
+      onPointerDown={stop}
+      onPointerUp={stop}
+      style={{ transform: `translateX(-50%) scaleX(${flip ? -1 : 1})` }}
+      className={`absolute bottom-[102%] left-1/2 flex items-center gap-1 rounded-full bg-card/90 p-1 shadow-[var(--shadow-room)] backdrop-blur transition opacity-0 pointer-events-none group-hover/item:pointer-events-auto group-hover/item:opacity-100`}
+    >
+      {p.current && isList(p.current) && (
+        <button aria-label="Previous" className={btn} onClick={p.prev}>
+          <SkipBack className="h-4 w-4" />
+        </button>
+      )}
+      <button
+        aria-label={p.playing ? "Pause music" : "Play music"}
+        className={`${btn} bg-primary text-primary-foreground hover:bg-primary/90`}
+        onClick={() => {
+          if (p.current) p.toggle();
+          else if (firstTrack) p.play(firstTrack.url, firstTrack.title);
+          else onOpen();
+        }}
+      >
+        {p.playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-0.5" />}
+      </button>
+      {p.current && isList(p.current) && (
+        <button aria-label="Next" className={btn} onClick={p.next}>
+          <SkipForward className="h-4 w-4" />
+        </button>
+      )}
+    </div>
   );
 }

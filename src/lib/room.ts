@@ -21,7 +21,15 @@ export type ItemType =
   | "hangingplant"
   | "bookrow"
   | "openbook"
-  | "speaker";
+  | "speaker"
+  | "candles"
+  | "lantern"
+  | "glowjar"
+  | "vinelights"
+  | "pothos"
+  | "fern"
+  | "snakeplant"
+  | "ivy";
 
 export interface RoomItem {
   id: string;
@@ -61,6 +69,14 @@ export const CATALOG: Record<
   cat: { label: "Sleeping cat", w: 9, ratio: 0.55, group: "Decor" },
   trash: { label: "Wastebasket", w: 6, ratio: 1.2, group: "Decor" },
   speaker: { label: "Vintage speaker", w: 7, ratio: 1.45, group: "Furniture" },
+  candles: { label: "Candles", w: 6, ratio: 1.1, group: "Decor" },
+  lantern: { label: "Brass lantern", w: 5, ratio: 1.7, group: "Decor" },
+  glowjar: { label: "Glow jar", w: 4.5, ratio: 1.4, group: "Decor" },
+  vinelights: { label: "Vine fairy lights", w: 40, ratio: 0.22, group: "Wall" },
+  pothos: { label: "Trailing pothos", w: 9, ratio: 1.6, group: "Decor" },
+  fern: { label: "Fern", w: 10, ratio: 1.1, group: "Decor" },
+  snakeplant: { label: "Snake plant", w: 6, ratio: 1.9, group: "Decor" },
+  ivy: { label: "Wall ivy", w: 14, ratio: 1.3, group: "Wall" },
 };
 
 export const THEMES = [

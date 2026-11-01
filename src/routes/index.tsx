@@ -274,6 +274,9 @@ function Builder() {
                     zIndex: it.z,
                   }}
                 >
+                  {(it.type === "candles" || it.type === "lantern" || it.type === "glowjar") && (
+                    <div className="room-glow pointer-events-none absolute left-1/2 top-[25%] h-[320%] w-[520%] -translate-x-1/2 -translate-y-1/2" />
+                  )}
                   {it.type === "lamp" && (
                     <div className="room-glow pointer-events-none absolute left-1/2 top-[30%] h-[400%] w-[700%] -translate-x-1/2 -translate-y-1/2" />
                   )}

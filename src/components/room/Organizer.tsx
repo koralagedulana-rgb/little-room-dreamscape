@@ -10,6 +10,9 @@ import {
   Play,
   Pause,
   Music2,
+  SkipBack,
+  SkipForward,
+  Volume2,
   ListMusic,
   ExternalLink,
 } from "lucide-react";
@@ -313,15 +316,38 @@ function Music({ data, save }: Sub) {
   const [err, setErr] = useState("");
   const [current, setCurrent] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
+  const [volume, setVolume] = useState(() => {
+    if (typeof window === "undefined") return 70;
+    const v = Number(window.localStorage.getItem("cozy-volume"));
+    return Number.isFinite(v) && v > 0 ? v : 70;
+  });
+  const frameRef = useRef<HTMLIFrameElement>(null);
+
+  const cmd = (func: string, args: unknown[] = []) =>
+    frameRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: "command", func, args }),
+      "*",
+    );
 
   const extractId = (raw: string): string | null => {
     const u = raw.trim();
     if (!u) return null;
-    const m = u.match(
-      /(?:youtu\.be\/|youtube\.com\/watch\?v=|music\.youtube\.com\/watch\?v=|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/,
+    const list = u.match(/[?&]list=([A-Za-z0-9_-]+)/);
+    const v = u.match(
+      /(?:youtu\.be\/|[?&]v=|youtube\.com\/embed\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/,
     );
-    return m ? (m[1] ?? null) : null;
+    if (list && !v) return `list:${list[1]}`;
+    return v ? (v[1] ?? null) : list ? `list:${list[1]}` : null;
   };
+  const isList = (k: string) => k.startsWith("list:");
+  const embedSrc = (k: string) =>
+    isList(k)
+      ? `https://www.youtube.com/embed/videoseries?list=${k.slice(5)}&autoplay=1&enablejsapi=1&rel=0`
+      : `https://www.youtube.com/embed/${k}?autoplay=1&enablejsapi=1&rel=0`;
+  const openHref = (k: string) =>
+    isList(k)
+      ? `https://music.youtube.com/playlist?list=${k.slice(5)}`
+      : `https://music.youtube.com/watch?v=${k}`;
 
   const addTrack = () => {
     const id = extractId(url);
@@ -345,8 +371,10 @@ function Music({ data, save }: Sub) {
   };
 
   const play = (t: Track) => {
-    if (current === t.url) setPlaying((p) => !p);
-    else {
+    if (current === t.url) {
+      cmd(playing ? "pauseVideo" : "playVideo");
+      setPlaying(!playing);
+    } else {
       setCurrent(t.url);
       setPlaying(true);
     }
@@ -381,12 +409,53 @@ function Music({ data, save }: Sub) {
         <div className="overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
           <div className="aspect-video w-full bg-black">
             <iframe
+              ref={frameRef}
               key={current}
-              src={`https://www.youtube.com/embed/${current}?autoplay=1&rel=0`}
+              onLoad={() => setTimeout(() => cmd("setVolume", [volume]), 600)}
+              src={embedSrc(current)}
               title="Now playing"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               className="h-full w-full"
+            />
+          </div>
+          <div className="flex items-center gap-2 px-3 py-2">
+            {isList(current) && (
+              <button aria-label="Previous" onClick={() => cmd("previousVideo")} className="rounded-lg p-1.5 hover:bg-secondary">
+                <SkipBack className="h-4 w-4" />
+              </button>
+            )}
+            <button
+              aria-label={playing ? "Pause" : "Play"}
+              onClick={() => {
+                cmd(playing ? "pauseVideo" : "playVideo");
+                setPlaying(!playing);
+              }}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground"
+            >
+              {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-0.5" />}
+            </button>
+            {isList(current) && (
+              <button aria-label="Next" onClick={() => cmd("nextVideo")} className="rounded-lg p-1.5 hover:bg-secondary">
+                <SkipForward className="h-4 w-4" />
+              </button>
+            )}
+            <Volume2 className="ml-2 h-4 w-4 text-muted-foreground" />
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={volume}
+              aria-label="Volume"
+              onChange={(e) => {
+                const v = Number(e.target.value);
+                setVolume(v);
+                cmd("setVolume", [v]);
+                try {
+                  window.localStorage.setItem("cozy-volume", String(v));
+                } catch {}
+              }}
+              className="flex-1 accent-[var(--primary)]"
             />
           </div>
         </div>
@@ -424,7 +493,7 @@ function Music({ data, save }: Sub) {
                   </button>
                   <span className="min-w-0 flex-1 truncate text-sm font-medium">{t.title}</span>
                   <a
-                    href={`https://music.youtube.com/watch?v=${t.url}`}
+                    href={openHref(t.url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Open in YouTube Music"
@@ -448,8 +517,8 @@ function Music({ data, save }: Sub) {
         </div>
       )}
       <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Music2 className="h-3.5 w-3.5" /> YouTube Music links play the same track in the embedded
-        player above.
+        <Music2 className="h-3.5 w-3.5" /> Track and playlist links from YouTube or YouTube Music both
+        work.
       </p>
     </div>
   );

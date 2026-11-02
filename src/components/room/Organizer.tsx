@@ -26,9 +26,10 @@ import {
   type Track,
 } from "@/lib/organizer";
 import { fileToResizedDataUrl } from "@/lib/image";
+import { Launcher } from "@/components/room/Launcher";
 import { isList, usePlayer } from "@/components/room/player";
 
-export type Panel = "shelf" | "corkboard" | "inbox" | "music";
+export type Panel = "shelf" | "corkboard" | "inbox" | "music" | "monitor";
 type Props = {
   panel: Panel;
   data: OrganizerData;
@@ -43,6 +44,7 @@ const TITLES: Record<Panel, [string, string]> = {
     "Pin notes, reminders, and photos to your board. Drag an image onto the board to pin it.",
   ],
   inbox: ["Task inbox", "Drop tasks in the tray and tick them off."],
+  monitor: ["Desktop", "Search the web and launch your favourite sites in your browser."],
   music: [
     "Vintage speaker",
     "Build a cozy playlist. Paste a YouTube or YouTube Music link to add a track.",
@@ -76,6 +78,7 @@ export function OrganizerPanel({ panel, data, save, onClose }: Props) {
         {panel === "corkboard" && <Board data={data} save={save} />}
         {panel === "inbox" && <Inbox data={data} save={save} />}
         {panel === "music" && <Music data={data} save={save} />}
+        {panel === "monitor" && <Launcher />}
       </div>
     </div>
   );

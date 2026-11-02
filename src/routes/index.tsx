@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { ItemArt } from "@/components/room/ItemArt";
 import { PhotoPicker } from "@/components/room/PhotoPicker";
 import { OrganizerPanel, type Panel } from "@/components/room/Organizer";
+import { loadLauncher, openExternal } from "@/components/room/Launcher";
 import { PlayerProvider, usePlayer, isList } from "@/components/room/player";
 import { useOrganizer, uid, type OrganizerData } from "@/lib/organizer";
 import { fileToResizedDataUrl } from "@/lib/image";
@@ -63,6 +64,7 @@ const PANEL_OF: Partial<Record<ItemType, Panel>> = {
   corkboard: "corkboard",
   inbox: "inbox",
   speaker: "music",
+  monitor: "monitor",
 };
 const GROUPS = ["Wall", "Furniture", "Decor"] as const;
 
@@ -222,7 +224,8 @@ function Builder() {
             if (d && !d.moved) {
               const t = items.find((i) => i.id === d.id)?.type;
               const nextPanel = t ? PANEL_OF[t] : undefined;
-              if (nextPanel) setPanel(nextPanel);
+              if (t === "monitor" && loadLauncher().direct) openExternal(loadLauncher().home);
+              else if (nextPanel) setPanel(nextPanel);
             }
           }}
           onPointerDown={() => setSel(null)}

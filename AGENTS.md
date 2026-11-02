@@ -12,3 +12,4 @@
 - Keep room editing controls in the collapsible drawer on the builder route; the room stage remains independently interactive when the drawer is closed.
 - Size the room canvas to the viewport and overlay the editing drawer instead of resizing the stage, so opening controls preserves the room layout.
 - Personal frame photos use optional per-item image data in the existing device-local room save; resize uploads in the browser before saving and retain the previous photo if storage fails.
+- Keep window artwork in a dedicated SVG component with instance-unique clipping IDs and a bundled outdoor image; preserve the catalog footprint so saved arrangements do not shift.

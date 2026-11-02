@@ -314,7 +314,7 @@ export function ItemArt({ type, photo }: { type: ItemType; photo?: string | unde
       );
     case "plant":
       return (
-        <svg viewBox="0 0 80 120" className="h-full w-full">
+        <svg viewBox="0 0 80 120" className="h-full w-full overflow-visible">
           <g className="room-sway" style={{ transformOrigin: "40px 80px" }}>
             {[
               [-40, 30],
@@ -342,7 +342,7 @@ export function ItemArt({ type, photo }: { type: ItemType; photo?: string | unde
       );
     case "monstera":
       return (
-        <svg viewBox="0 0 100 140" className="h-full w-full">
+        <svg viewBox="0 0 100 140" className="h-full w-full overflow-visible">
           <g className="room-sway" style={{ transformOrigin: "50px 100px" }}>
             {[
               [-42, 46, 34],

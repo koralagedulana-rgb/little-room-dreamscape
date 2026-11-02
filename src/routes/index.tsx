@@ -534,14 +534,17 @@ function SpeakerControls({
       onPointerDown={stop}
       onPointerUp={stop}
       style={{ transform: `translateX(-50%) scaleX(${flip ? -1 : 1})` }}
-      className={`absolute bottom-[102%] left-1/2 flex items-center gap-1 rounded-full bg-card/90 p-1 shadow-[var(--shadow-room)] backdrop-blur transition opacity-0 pointer-events-none group-hover/item:pointer-events-auto group-hover/item:opacity-100`}
+      className="absolute bottom-full left-1/2 z-10 pb-3 opacity-0 pointer-events-none transition-opacity delay-150 group-hover/item:delay-0 group-hover/item:pointer-events-auto group-hover/item:opacity-100 group-focus-within/item:delay-0 group-focus-within/item:pointer-events-auto group-focus-within/item:opacity-100 motion-reduce:transition-none"
     >
+      <div role="toolbar" aria-label="Speaker playback" className="flex items-center gap-1 rounded-full bg-card/90 p-1 shadow-[var(--shadow-room)] backdrop-blur">
       {p.current && isList(p.current) && (
-        <button aria-label="Previous" className={btn} onClick={p.prev}>
+        <Button size="icon" variant="ghost" aria-label="Previous" title="Previous" className={btn} onClick={p.prev}>
           <SkipBack className="h-4 w-4" />
-        </button>
+        </Button>
       )}
-      <button
+      <Button
+        size="icon"
+        title={p.playing ? "Pause music" : "Play music"}
         aria-label={p.playing ? "Pause music" : "Play music"}
         className={`${btn} bg-primary text-primary-foreground hover:bg-primary/90`}
         onClick={() => {
@@ -551,12 +554,13 @@ function SpeakerControls({
         }}
       >
         {p.playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-0.5" />}
-      </button>
+      </Button>
       {p.current && isList(p.current) && (
-        <button aria-label="Next" className={btn} onClick={p.next}>
+        <Button size="icon" variant="ghost" aria-label="Next" title="Next" className={btn} onClick={p.next}>
           <SkipForward className="h-4 w-4" />
-        </button>
+        </Button>
       )}
+      </div>
     </div>
   );
 }

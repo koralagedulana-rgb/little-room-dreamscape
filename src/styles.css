@@ -65,6 +65,11 @@
 }
 
 :root {
+  --window-wood-dark: oklch(0.21 0.027 40);
+  --window-wood: oklch(0.32 0.046 43);
+  --window-edge: oklch(0.48 0.055 65);
+  --window-brass: oklch(0.68 0.095 80);
+  --window-glass: oklch(0.86 0.025 220);
   --radius: 0.75rem;
   --background: oklch(0.965 0.015 80);
   --foreground: oklch(0.3 0.03 50);

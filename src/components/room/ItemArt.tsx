@@ -1,20 +1,11 @@
 import type { ItemType } from "@/lib/room";
+import { GothicWindow } from "./GothicWindow";
 
 // Illustrated artwork for each room item. Colors here are part of the illustration itself.
 export function ItemArt({ type, photo }: { type: ItemType; photo?: string | undefined }) {
   switch (type) {
     case "window":
-      return (
-        <svg viewBox="0 0 100 110" className="h-full w-full">
-          <rect x="4" y="4" width="92" height="96" rx="4" fill="#d9c9a3" />
-          <rect x="11" y="11" width="78" height="82" fill="var(--room-sky)" />
-          <circle cx="68" cy="30" r="8" fill="var(--room-sun)" className="room-twinkle" />
-          <path d="M11 78 Q35 62 55 74 T89 70 V93 H11Z" fill="var(--room-hill)" />
-          <rect x="48" y="11" width="4" height="82" fill="#d9c9a3" />
-          <rect x="11" y="50" width="78" height="4" fill="#d9c9a3" />
-          <rect x="0" y="98" width="100" height="8" rx="2" fill="#a88a5c" />
-        </svg>
-      );
+      return <GothicWindow />;
     case "lights":
       return (
         <svg viewBox="0 0 400 48" className="h-full w-full overflow-visible">

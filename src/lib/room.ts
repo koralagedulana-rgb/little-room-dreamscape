@@ -1,3 +1,5 @@
+import type { LightColor } from "./fairy-lights";
+
 export type ItemType =
   | "window"
   | "lights"
@@ -26,6 +28,9 @@ export type ItemType =
   | "lantern"
   | "glowjar"
   | "vinelights"
+  | "curtainlights"
+  | "starlights"
+  | "globelights"
   | "pothos"
   | "fern"
   | "snakeplant"
@@ -40,6 +45,7 @@ export interface RoomItem {
   flip: boolean;
   z: number;
   photo?: string | undefined;
+  lightColor?: LightColor | undefined;
 }
 
 export const CATALOG: Record<
@@ -73,6 +79,9 @@ export const CATALOG: Record<
   lantern: { label: "Brass lantern", w: 5, ratio: 1.7, group: "Decor" },
   glowjar: { label: "Glow jar", w: 4.5, ratio: 1.4, group: "Decor" },
   vinelights: { label: "Vine fairy lights", w: 40, ratio: 0.22, group: "Wall" },
+  curtainlights: { label: "Curtain fairy lights", w: 32, ratio: 0.525, group: "Wall" },
+  starlights: { label: "Star fairy lights", w: 38, ratio: 0.225, group: "Wall" },
+  globelights: { label: "Globe fairy lights", w: 36, ratio: 0.225, group: "Wall" },
   pothos: { label: "Trailing pothos", w: 9, ratio: 1.6, group: "Decor" },
   fern: { label: "Fern", w: 10, ratio: 1.1, group: "Decor" },
   snakeplant: { label: "Snake plant", w: 6, ratio: 1.9, group: "Decor" },

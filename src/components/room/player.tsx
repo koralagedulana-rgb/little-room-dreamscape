@@ -1,23 +1,24 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { loadYouTubeAPI, playbackStatus, type PlaybackStatus, type YouTubePlayer } from "@/lib/youtube-player";
 
 export const isList = (k: string) => k.startsWith("list:");
-const embedSrc = (k: string) =>
-  isList(k)
-    ? `https://www.youtube.com/embed/videoseries?list=${k.slice(5)}&autoplay=1&enablejsapi=1&rel=0`
-    : `https://www.youtube.com/embed/${k}?autoplay=1&enablejsapi=1&rel=0`;
-
 type Player = {
   current: string | null;
   title: string;
+  artist: string;
   playing: boolean;
+  status: PlaybackStatus;
+  error: string;
+  elapsed: number;
+  duration: number;
   volume: number;
   play: (key: string, title: string) => void;
   toggle: () => void;
   next: () => void;
   prev: () => void;
+  seek: (seconds: number) => void;
   setVolume: (v: number) => void;
 };
-
 const Ctx = createContext<Player | null>(null);
 export const usePlayer = () => {
   const p = useContext(Ctx);
@@ -25,87 +26,147 @@ export const usePlayer = () => {
   return p;
 };
 
-/** Keeps one hidden YouTube player alive for the whole room so music continues in the background. */
+/** One persistent official YouTube player; menu visibility never owns playback. */
 export function PlayerProvider({ children }: { children: ReactNode }) {
   const [current, setCurrent] = useState<string | null>(null);
   const [title, setTitle] = useState("");
-  const [playing, setPlaying] = useState(false);
+  const [artist, setArtist] = useState("");
+  const [status, setStatus] = useState<PlaybackStatus>("idle");
+  const [error, setError] = useState("");
+  const [elapsed, setElapsed] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [volume, setVol] = useState(70);
-  const ref = useRef<HTMLIFrameElement>(null);
+  const host = useRef<HTMLDivElement>(null);
+  const api = useRef<YouTubePlayer | null>(null);
+  const volumeRef = useRef(volume);
+  const fallbackTitle = useRef("");
+  const desiredPlaying = useRef(false);
+  const playing = status === "playing";
 
   useEffect(() => {
-    const v = Number(localStorage.getItem("cozy-volume"));
-    if (Number.isFinite(v) && v > 0) setVol(v);
-    const onMsg = (e: MessageEvent) => {
-      if (!String(e.origin).includes("youtube")) return;
-      try {
-        const d = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
-        const st = d?.info?.playerState;
-        if (st === 1) setPlaying(true);
-        else if (st === 2 || st === 0) setPlaying(false);
-      } catch {
-        // ignore non-JSON messages
+    try {
+      const stored = localStorage.getItem("cozy-volume");
+      const v = Number(stored);
+      if (stored !== null && Number.isFinite(v) && v >= 0 && v <= 100) {
+        setVol(v);
+        volumeRef.current = v;
       }
-    };
-    window.addEventListener("message", onMsg);
-    return () => window.removeEventListener("message", onMsg);
+    } catch { /* storage can be disabled by the wallpaper host */ }
   }, []);
 
-  const cmd = (func: string, args: unknown[] = []) =>
-    ref.current?.contentWindow?.postMessage(JSON.stringify({ event: "command", func, args }), "*");
+  useEffect(() => {
+    if (!current || !host.current) return;
+    let cancelled = false;
+    let timer: ReturnType<typeof setInterval> | undefined;
+    let instance: YouTubePlayer | null = null;
+    const container = host.current;
+    const mount = document.createElement("div");
+    container.replaceChildren(mount);
+    const read = () => {
+      if (!instance || cancelled) return;
+      const data = instance.getVideoData();
+      setTitle(data.title || fallbackTitle.current);
+      setArtist(data.author || "");
+      const time = instance.getCurrentTime();
+      const length = instance.getDuration();
+      setElapsed(Number.isFinite(time) ? Math.max(0, time) : 0);
+      setDuration(Number.isFinite(length) ? Math.max(0, length) : 0);
+    };
+    loadYouTubeAPI().then((yt) => {
+      if (cancelled) return;
+      instance = new yt.Player(mount, {
+        width: 200,
+        height: 200,
+        ...(isList(current) ? {} : { videoId: current }),
+        playerVars: {
+          autoplay: 1, playsinline: 1, rel: 0, origin: window.location.origin,
+          ...(isList(current) ? { listType: "playlist", list: current.slice(5) } : {}),
+        },
+        events: {
+          onReady: ({ target }) => {
+            if (cancelled) return;
+            api.current = target;
+            target.setVolume(volumeRef.current);
+            if (desiredPlaying.current) target.playVideo();
+            else target.pauseVideo();
+            timer = setInterval(read, 500);
+            read();
+          },
+          onStateChange: ({ data }) => {
+            if (cancelled) return;
+            setStatus(playbackStatus(data));
+            if (data === 1) setError("");
+            read();
+          },
+          onError: ({ data }) => {
+            if (cancelled) return;
+            setStatus("error");
+            setError(data === 101 || data === 150
+              ? "This track can't play here. Open it in YouTube Music or choose another track."
+              : data === 153
+                ? "YouTube couldn't verify this wallpaper player. Open this track in YouTube Music."
+                : "This track couldn't be played. Try another public YouTube link.");
+          },
+        },
+      });
+    }).catch(() => {
+      if (!cancelled) {
+        setStatus("error");
+        setError("YouTube couldn't be reached. Check your connection, then try playing again.");
+      }
+    });
+    return () => {
+      cancelled = true;
+      if (timer) clearInterval(timer);
+      api.current = null;
+      instance?.destroy();
+      container.replaceChildren();
+    };
+  }, [current]);
 
+  const toggle = () => {
+    if (!current) return;
+    desiredPlaying.current = !desiredPlaying.current;
+    if (desiredPlaying.current) api.current?.playVideo();
+    else api.current?.pauseVideo();
+  };
   const value: Player = {
-    current,
-    title,
-    playing,
-    volume,
+    current, title, artist, playing, status, error, elapsed, duration, volume,
     play: (key, t) => {
+      if (key === current && status !== "error") { toggle(); return; }
+      fallbackTitle.current = t;
+      desiredPlaying.current = true;
+      setTitle(t);
+      setArtist("");
+      setElapsed(0);
+      setDuration(0);
+      setError("");
+      setStatus("loading");
       if (key === current) {
-        cmd(playing ? "pauseVideo" : "playVideo");
-        setPlaying(!playing);
-      } else {
-        setCurrent(key);
-        setTitle(t);
-        setPlaying(true);
-      }
+        // Remount on retry, including a failed API-script load.
+        setCurrent(null);
+        window.setTimeout(() => setCurrent(key), 0);
+      } else setCurrent(key);
     },
-    toggle: () => {
-      if (!current) return;
-      cmd(playing ? "pauseVideo" : "playVideo");
-      setPlaying(!playing);
+    toggle,
+    next: () => api.current?.nextVideo(),
+    prev: () => api.current?.previousVideo(),
+    seek: (seconds) => {
+      if (!duration) return;
+      api.current?.seekTo(Math.min(duration, Math.max(0, seconds)), true);
     },
-    next: () => cmd("nextVideo"),
-    prev: () => cmd("previousVideo"),
     setVolume: (v) => {
-      setVol(v);
-      cmd("setVolume", [v]);
-      try {
-        localStorage.setItem("cozy-volume", String(v));
-      } catch {
-        // ignore
-      }
+      const bounded = Math.min(100, Math.max(0, v));
+      setVol(bounded);
+      volumeRef.current = bounded;
+      api.current?.setVolume(bounded);
+      try { localStorage.setItem("cozy-volume", String(bounded)); } catch { /* optional */ }
     },
   };
-
   return (
     <Ctx.Provider value={value}>
       {children}
-      {current && (
-        <iframe
-          ref={ref}
-          key={current}
-          src={embedSrc(current)}
-          title="Room music"
-          allow="autoplay; encrypted-media"
-          onLoad={() => {
-            ref.current?.contentWindow?.postMessage(JSON.stringify({ event: "listening" }), "*");
-            setTimeout(() => cmd("setVolume", [volume]), 600);
-          }}
-          aria-hidden
-          tabIndex={-1}
-          className="pointer-events-none fixed -left-[400px] top-0 h-[200px] w-[200px] opacity-0"
-        />
-      )}
+      <div ref={host} aria-hidden="true" className="pointer-events-none fixed -left-[400px] top-0 h-[200px] w-[200px] opacity-0" />
     </Ctx.Provider>
   );
 }

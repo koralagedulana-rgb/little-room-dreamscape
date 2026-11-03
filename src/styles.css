@@ -65,6 +65,7 @@
 }
 
 :root {
+  --sound-wave: oklch(0.78 0.12 80);
   --window-wood-dark: oklch(0.21 0.027 40);
   --window-wood: oklch(0.32 0.046 43);
   --window-edge: oklch(0.48 0.055 65);
@@ -210,6 +211,18 @@
 .room-twinkle { animation: bulb 4s ease-in-out infinite; }
 @keyframes pulse { 0% { opacity: 0.2; r: 9 } 50% { opacity: 0.6; r: 12 } 100% { opacity: 0.2; r: 9 } }
 .room-pulse { animation: pulse 2.4s ease-in-out infinite; }
+
+.sound-indicator { display: inline-flex; align-items: center; justify-content: center; gap: 3px; width: 29px; height: 20px; flex-shrink: 0; }
+.sound-indicator > span { width: 3px; height: 16px; border-radius: 2px; background: var(--sound-wave); transform: scaleY(.2); transform-origin: center; transition: transform 200ms; }
+.sound-indicator[data-playing="true"] > span { animation: sound-wave 900ms ease-in-out infinite alternate; }
+.sound-indicator > span:nth-child(2) { animation-delay: -400ms; }
+.sound-indicator > span:nth-child(3) { animation-delay: -150ms; }
+.sound-indicator > span:nth-child(4) { animation-delay: -650ms; }
+.sound-indicator > span:nth-child(5) { animation-delay: -300ms; }
+@keyframes sound-wave { from { transform: scaleY(.25); } to { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .sound-indicator[data-playing="true"] > span { animation: none; transform: scaleY(.65); }
+}
 
 /* Sticky notes */
 .note-yellow { background: oklch(0.92 0.13 98); color: oklch(0.32 0.06 80); }

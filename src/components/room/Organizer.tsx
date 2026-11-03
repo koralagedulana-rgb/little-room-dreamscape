@@ -28,6 +28,9 @@ import {
 import { fileToResizedDataUrl } from "@/lib/image";
 import { Launcher } from "@/components/room/Launcher";
 import { isList, usePlayer } from "@/components/room/player";
+import { SoundIndicator } from "@/components/room/SoundIndicator";
+import { Button } from "@/components/ui/button";
+import { formatPlaybackTime } from "@/lib/youtube-player";
 
 export type Panel = "shelf" | "corkboard" | "inbox" | "music" | "monitor";
 type Props = {
@@ -383,26 +386,48 @@ function Music({ data, save }: Sub) {
       </div>
       {err && <p className="text-sm text-destructive">{err}</p>}
       {current && (
-        <div className="flex items-center gap-2 rounded-2xl border border-border bg-background px-3 py-2 shadow-sm">
+        <section aria-label="Now playing" className="space-y-3 border-y border-border py-4">
+          <div className="flex items-start gap-3">
+            <SoundIndicator playing={playing} />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {({ idle: "Ready", loading: "Connecting…", playing: "Now playing", paused: "Paused", ended: "Finished", buffering: "Buffering…", error: "Playback unavailable" })[player.status]}
+              </p>
+              <p className="mt-1 break-words font-display text-xl leading-snug">{player.title}</p>
+              {player.artist && <p className="mt-1 break-words text-sm text-muted-foreground">{player.artist}</p>}
+            </div>
+            <a href={openHref(current)} target="_blank" rel="noopener noreferrer" aria-label="Open current track in YouTube Music" title="Open in YouTube Music" className="shrink-0 rounded-md p-2 hover:bg-secondary">
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </div>
+          {player.error && <p role="alert" className="text-sm text-destructive">{player.error}</p>}
+          <div>
+            <input type="range" aria-label="Playback position" min={0} max={player.duration || 1} step={1} value={Math.min(player.elapsed, player.duration || 1)} disabled={!player.duration} onChange={(e) => player.seek(Number(e.target.value))} className="block w-full accent-[var(--primary)] disabled:opacity-40" />
+            <div className="mt-1 flex justify-between text-xs tabular-nums text-muted-foreground">
+              <span>{formatPlaybackTime(player.elapsed)}</span>
+              <span>{player.duration ? formatPlaybackTime(player.duration) : "—:—"}</span>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
           {isList(current) && (
-            <button aria-label="Previous" onClick={player.prev} className="rounded-lg p-1.5 hover:bg-secondary">
+            <Button size="icon" variant="ghost" aria-label="Previous" title="Previous" onClick={player.prev}>
               <SkipBack className="h-4 w-4" />
-            </button>
+            </Button>
           )}
-          <button
+          <Button size="icon"
             aria-label={playing ? "Pause" : "Play"}
-            onClick={player.toggle}
+            title={playing ? "Pause" : "Play"}
+            onClick={() => player.status === "error" ? player.play(current, player.title) : player.toggle()}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground"
           >
             {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-0.5" />}
-          </button>
+          </Button>
           {isList(current) && (
-            <button aria-label="Next" onClick={player.next} className="rounded-lg p-1.5 hover:bg-secondary">
+            <Button size="icon" variant="ghost" aria-label="Next" title="Next" onClick={player.next}>
               <SkipForward className="h-4 w-4" />
-            </button>
+            </Button>
           )}
-          <span className="min-w-0 flex-1 truncate text-sm font-medium">{player.title}</span>
-          <Volume2 className="h-4 w-4 text-muted-foreground" />
+          <Volume2 className="ml-auto h-4 w-4 text-muted-foreground" />
           <input
             type="range"
             min={0}
@@ -412,7 +437,9 @@ function Music({ data, save }: Sub) {
             onChange={(e) => player.setVolume(Number(e.target.value))}
             className="w-24 accent-[var(--primary)]"
           />
-        </div>
+          <span className="w-8 text-right text-xs tabular-nums text-muted-foreground">{volume}%</span>
+          </div>
+        </section>
       )}
       {data.tracks.length === 0 ? (
         <Empty>
@@ -446,6 +473,7 @@ function Music({ data, save }: Sub) {
                     )}
                   </button>
                   <span className="min-w-0 flex-1 truncate text-sm font-medium">{t.title}</span>
+                  {active && <SoundIndicator playing={playing} />}
                   <a
                     href={openHref(t.url)}
                     target="_blank"

@@ -13,3 +13,4 @@
 - Size the room canvas to the viewport and overlay the editing drawer instead of resizing the stage, so opening controls preserves the room layout.
 - Personal frame photos use optional per-item image data in the existing device-local room save; resize uploads in the browser before saving and retain the previous photo if storage fails.
 - Keep window artwork in a dedicated SVG component with instance-unique clipping IDs and a bundled outdoor image; preserve the catalog footprint so saved arrangements do not shift.
+- Keep music playback in the room-level provider using the official browser-only YouTube iframe API; derive song metadata and indicators from player feedback so closing menus never interrupts music or falsely reports playback.

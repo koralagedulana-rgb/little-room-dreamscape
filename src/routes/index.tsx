@@ -22,6 +22,7 @@ import { PhotoPicker } from "@/components/room/PhotoPicker";
 import { OrganizerPanel, type Panel } from "@/components/room/Organizer";
 import { loadLauncher, openExternal } from "@/components/room/Launcher";
 import { PlayerProvider, usePlayer, isList } from "@/components/room/player";
+import { SoundIndicator } from "@/components/room/SoundIndicator";
 import { useOrganizer, uid, type OrganizerData } from "@/lib/organizer";
 import { fileToResizedDataUrl } from "@/lib/image";
 import {
@@ -533,6 +534,12 @@ function SpeakerControls({
   const btn =
     "flex h-8 w-8 items-center justify-center rounded-full bg-card text-foreground shadow hover:bg-secondary";
   return (
+    <>
+    {p.current && (
+      <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 pb-2" title={p.title}>
+        <SoundIndicator playing={p.playing} />
+      </div>
+    )}
     <div
       onPointerDown={stop}
       onPointerUp={stop}
@@ -565,5 +572,6 @@ function SpeakerControls({
       )}
       </div>
     </div>
+    </>
   );
 }

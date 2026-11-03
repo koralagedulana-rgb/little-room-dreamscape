@@ -95,6 +95,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
           onStateChange: ({ data }) => {
             if (cancelled) return;
             setStatus(playbackStatus(data));
+            if (data === 1) desiredPlaying.current = true;
+            else if (data === 2 || data === 0) desiredPlaying.current = false;
             if (data === 1) setError("");
             read();
           },

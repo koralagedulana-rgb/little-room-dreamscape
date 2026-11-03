@@ -25,6 +25,7 @@ import { PlayerProvider, usePlayer, isList } from "@/components/room/player";
 import { SoundIndicator } from "@/components/room/SoundIndicator";
 import { useOrganizer, uid, type OrganizerData } from "@/lib/organizer";
 import { fileToResizedDataUrl } from "@/lib/image";
+import { LIGHT_COLORS, isFairyLight } from "@/lib/fairy-lights";
 import {
   CATALOG,
   DEFAULT_ITEMS,
@@ -284,7 +285,7 @@ function Builder() {
                   {it.type === "lamp" && (
                     <div className="room-glow pointer-events-none absolute left-1/2 top-[30%] h-[400%] w-[700%] -translate-x-1/2 -translate-y-1/2" />
                   )}
-                  <ItemArt type={it.type} photo={it.photo} />
+                  <ItemArt type={it.type} photo={it.photo} lightColor={it.lightColor} />
                   {it.type === "corkboard" && org.data.pins.length > 0 && (
                     <div className="pointer-events-none absolute inset-[6%] grid grid-cols-3 content-start gap-[4%] bg-[oklch(0.75_0.08_65)] p-[4%]">
                       {org.data.pins.slice(0, 6).map((p, i) =>
@@ -387,6 +388,18 @@ function Builder() {
           {selected && !locked && (
             <section className="rounded-2xl bg-card p-4 shadow-sm">
               <h2 className="mb-3 font-display text-lg">{CATALOG[selected.type].label}</h2>
+              {isFairyLight(selected.type) && (
+                <fieldset className="mb-4">
+                  <legend className="mb-2 text-sm text-muted-foreground">Light color</legend>
+                  <div className="flex flex-wrap gap-2">
+                    {LIGHT_COLORS.map((color) => (
+                      <Button key={color.id} size="icon" variant="ghost" aria-label={color.label} title={color.label} aria-pressed={(selected.lightColor ?? "warm") === color.id} onClick={() => update(selected.id, { lightColor: color.id })} className={`h-8 w-8 rounded-full p-1 ${(selected.lightColor ?? "warm") === color.id ? "ring-2 ring-ring ring-offset-2 ring-offset-card" : ""}`}>
+                        <span className={`fairy-swatch fairy-swatch-${color.id} h-full w-full rounded-full border border-border`} />
+                      </Button>
+                    ))}
+                  </div>
+                </fieldset>
+              )}
               {selected.type === "frame" && (
                 <PhotoPicker
                   key={selected.id}

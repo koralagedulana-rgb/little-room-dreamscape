@@ -1,31 +1,14 @@
 import type { ItemType } from "@/lib/room";
 import { GothicWindow } from "./GothicWindow";
+import { FairyLights } from "./FairyLights";
+import { isFairyLight, type LightColor } from "@/lib/fairy-lights";
 
 // Illustrated artwork for each room item. Colors here are part of the illustration itself.
-export function ItemArt({ type, photo }: { type: ItemType; photo?: string | undefined }) {
+export function ItemArt({ type, photo, lightColor }: { type: ItemType; photo?: string | undefined; lightColor?: LightColor | undefined }) {
+  if (isFairyLight(type)) return <FairyLights type={type} color={lightColor} />;
   switch (type) {
     case "window":
       return <GothicWindow />;
-    case "lights":
-      return (
-        <svg viewBox="0 0 400 48" className="h-full w-full overflow-visible">
-          <path d="M0 6 Q100 40 200 10 T400 8" stroke="#3a2e22" strokeWidth="1.5" fill="none" />
-          {Array.from({ length: 14 }).map((_, i) => {
-            const x = 14 + i * 28;
-            const t = x / 400;
-            const y =
-              t < 0.5
-                ? 6 + Math.sin(t * 2 * Math.PI) * 18 + 8
-                : 10 + Math.sin((t - 0.5) * 2 * Math.PI) * 12;
-            return (
-              <g key={i} className="room-bulb" style={{ animationDelay: `${i * 0.23}s` }}>
-                <circle cx={x} cy={y + 6} r="9" fill="var(--room-bulb)" opacity="0.35" />
-                <ellipse cx={x} cy={y + 6} rx="3.2" ry="4.5" fill="var(--room-bulb)" />
-              </g>
-            );
-          })}
-        </svg>
-      );
     case "corkboard":
       return (
         <svg viewBox="0 0 200 144" className="h-full w-full">
@@ -601,28 +584,6 @@ export function ItemArt({ type, photo }: { type: ItemType; photo?: string | unde
             <circle key={i} cx={x} cy={y} r="1.8" fill="#fff0a8" className="room-bulb" style={{ animationDelay: `${i * 0.3}s` }} />
           ))}
           <path d="M14 16 Q24 30 18 44 Q12 56 30 62" stroke="#c9a66b" strokeWidth="0.6" fill="none" />
-        </svg>
-      );
-    case "vinelights":
-      return (
-        <svg viewBox="0 0 400 88" className="h-full w-full overflow-visible">
-          <path d="M0 10 Q100 70 200 30 T400 14" stroke="#2f4a2a" strokeWidth="2" fill="none" />
-          {Array.from({ length: 22 }, (_, i) => {
-            const t = i / 21;
-            const x = t * 400;
-            const y = 10 + Math.sin(t * Math.PI * 2.1) * -26 + 26 + (t < 0.5 ? 10 : -6) * Math.sin(t * Math.PI);
-            return (
-              <g key={i}>
-                <ellipse cx={x + 4} cy={y + 4} rx="6" ry="3" fill={i % 2 ? "#3e6b34" : "#2f5a2a"} transform={`rotate(${i % 2 ? 30 : -30} ${x + 4} ${y + 4})`} />
-                {i % 2 === 0 && (
-                  <>
-                    <circle cx={x} cy={y + 9} r="7" fill="#ffd27a" opacity="0.25" />
-                    <circle cx={x} cy={y + 9} r="2.6" fill="#ffe7a3" className="room-bulb" style={{ animationDelay: `${i * 0.2}s` }} />
-                  </>
-                )}
-              </g>
-            );
-          })}
         </svg>
       );
     case "pothos":

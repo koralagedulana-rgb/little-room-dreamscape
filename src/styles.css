@@ -65,6 +65,16 @@
 }
 
 :root {
+  --fairy-warm: oklch(0.88 0.13 80);
+  --fairy-white: oklch(0.97 0.025 95);
+  --fairy-rose: oklch(0.79 0.14 5);
+  --fairy-green: oklch(0.81 0.15 155);
+  --fairy-blue: oklch(0.83 0.1 235);
+  --fairy-lavender: oklch(0.79 0.12 300);
+  --fairy-wire: oklch(0.29 0.025 55);
+  --fairy-leaf: oklch(0.46 0.11 145);
+  --fairy-leaf-dark: oklch(0.34 0.075 145);
+  --fairy-spectrum: linear-gradient(135deg, var(--fairy-rose), var(--fairy-warm), var(--fairy-green), var(--fairy-blue), var(--fairy-lavender));
   --sound-wave: oklch(0.78 0.12 80);
   --window-wood-dark: oklch(0.21 0.027 40);
   --window-wood: oklch(0.32 0.046 43);
@@ -209,6 +219,15 @@
 @keyframes spin { to { transform: rotate(360deg) } }
 .room-second { animation: spin 60s steps(60) infinite; }
 .room-twinkle { animation: bulb 4s ease-in-out infinite; }
+.fairy-twinkle { animation: bulb 3.4s ease-in-out infinite; }
+.fairy-swatch-warm { background: var(--fairy-warm); }
+.fairy-swatch-white { background: var(--fairy-white); }
+.fairy-swatch-rose { background: var(--fairy-rose); }
+.fairy-swatch-green { background: var(--fairy-green); }
+.fairy-swatch-blue { background: var(--fairy-blue); }
+.fairy-swatch-lavender { background: var(--fairy-lavender); }
+.fairy-swatch-multicolor { background: var(--fairy-spectrum); }
+@media (prefers-reduced-motion: reduce) { .fairy-twinkle { animation: none; } }
 @keyframes pulse { 0% { opacity: 0.2; r: 9 } 50% { opacity: 0.6; r: 12 } 100% { opacity: 0.2; r: 9 } }
 .room-pulse { animation: pulse 2.4s ease-in-out infinite; }
 

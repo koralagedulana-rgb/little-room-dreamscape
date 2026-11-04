@@ -15,3 +15,4 @@
 - Keep window artwork in a dedicated SVG component with instance-unique clipping IDs and a bundled outdoor image; preserve the catalog footprint so saved arrangements do not shift.
 - Keep music playback in the room-level provider using the official browser-only YouTube iframe API; derive song metadata and indicators from player feedback so closing menus never interrupts music or falsely reports playback.
 - Render fairy-light variants through shared artwork with optional per-item color in the existing room save; undefined colors keep a warm default so old arrangements remain compatible.
+- Show music video on the monitor by pinning the single fixed-position player over the monitor screen each frame; never move the iframe in the DOM, since moving it reloads playback.

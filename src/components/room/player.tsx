@@ -168,7 +168,41 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   return (
     <Ctx.Provider value={value}>
       {children}
-      <div ref={host} aria-hidden="true" className="pointer-events-none fixed -left-[400px] top-0 h-[200px] w-[200px] opacity-0" />
+      <MonitorFollower status={status} current={current} />
+      <div
+        ref={host}
+        aria-hidden="true"
+        data-video-host
+        className="monitor-video pointer-events-none fixed -left-[400px] top-0 h-[200px] w-[200px] overflow-hidden opacity-0"
+      />
     </Ctx.Provider>
   );
+}
+
+/** Keeps the single player pinned over the monitor's screen without moving the iframe (moving reloads it). */
+function MonitorFollower({ status, current }: { status: PlaybackStatus; current: string | null }) {
+  useEffect(() => {
+    const showing = !!current && (status === "playing" || status === "paused" || status === "buffering");
+    let frame = 0;
+    const tick = () => {
+      const el = document.querySelector<HTMLElement>("[data-video-host]");
+      const screen = document.querySelector<HTMLElement>("[data-monitor-screen]");
+      if (el) {
+        const r = screen?.getBoundingClientRect();
+        if (showing && r && r.width > 4) {
+          const item = screen!.closest<HTMLElement>("[data-room-item]");
+          Object.assign(el.style, {
+            left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px`,
+            opacity: "1", zIndex: item?.style.zIndex || "1",
+          });
+        } else {
+          Object.assign(el.style, { left: "-400px", top: "0px", width: "200px", height: "200px", opacity: "0" });
+        }
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    tick();
+    return () => cancelAnimationFrame(frame);
+  }, [status, current]);
+  return null;
 }

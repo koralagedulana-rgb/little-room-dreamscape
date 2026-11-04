@@ -198,17 +198,43 @@ export function ItemArt({ type, photo, lightColor }: { type: ItemType; photo?: s
       );
     case "desk":
       return (
-        <svg viewBox="0 0 200 100" className="h-full w-full">
-          <rect x="0" y="0" width="200" height="10" rx="2" fill="#5a3a24" />
-          <rect x="0" y="9" width="200" height="4" fill="#3e2618" />
-          <rect x="6" y="13" width="64" height="87" fill="#4a2e1c" />
-          {[22, 50, 78].map((y) => (
+        <svg viewBox="0 0 200 100" className="h-full w-full overflow-visible">
+          {/* contact shadow */}
+          <ellipse cx="100" cy="100" rx="98" ry="3" fill="#000" opacity="0.35" />
+          {/* 2.5D top plane */}
+          <path d="M8 0 H192 L200 7 H0Z" fill="#4a2c1a" />
+          <path d="M8 0 H192 L196 3.5 H4Z" fill="#5e3a22" opacity="0.6" />
+          {/* leather blotter */}
+          <path d="M70 1.2 H150 L154 5.6 H66Z" fill="#23402f" />
+          <path d="M72 1.8 H148 L151 5 H69Z" fill="none" stroke="#b08a4a" strokeWidth="0.4" opacity="0.7" />
+          {/* front edge with moulding */}
+          <rect x="0" y="7" width="200" height="6" fill="#3a2214" />
+          <rect x="0" y="12" width="200" height="1.2" fill="#24140b" />
+          <rect x="0" y="7" width="200" height="0.8" fill="#6e4a2c" opacity="0.6" />
+          {/* apron with centre drawer */}
+          <rect x="72" y="13" width="112" height="12" fill="#2e1a10" />
+          <rect x="76" y="15" width="104" height="8" rx="0.8" fill="#3d2415" stroke="#1e0e08" strokeWidth="0.6" />
+          <circle cx="128" cy="19" r="1.6" fill="#c9a05a" />
+          <circle cx="128" cy="19" r="0.7" fill="#7a5a2a" />
+          {/* pedestal */}
+          <rect x="6" y="13" width="64" height="83" fill="#2e1a10" />
+          <rect x="66" y="13" width="4" height="83" fill="#1e0e08" opacity="0.7" />
+          {[16, 43, 70].map((y) => (
             <g key={y}>
-              <rect x="10" y={y - 6} width="56" height="24" fill="#d9c9a3" />
-              <rect x="28" y={y + 2} width="20" height="3" rx="1.5" fill="#b08a4a" />
+              <rect x="10" y={y} width="54" height="24" rx="1" fill="#3d2415" stroke="#1e0e08" strokeWidth="0.8" />
+              <rect x="13" y={y + 3} width="48" height="18" rx="0.6" fill="none" stroke="#5a3820" strokeWidth="0.6" />
+              <path d={`M30 ${y + 10} q7 5 14 0`} fill="none" stroke="#c9a05a" strokeWidth="1.6" strokeLinecap="round" />
+              <circle cx="30" cy={y + 10} r="1.2" fill="#a07c3e" />
+              <circle cx="44" cy={y + 10} r="1.2" fill="#a07c3e" />
             </g>
           ))}
-          <rect x="186" y="13" width="8" height="87" fill="#3e2618" />
+          {/* plinth */}
+          <rect x="4" y="94" width="68" height="4" fill="#24140b" />
+          {/* turned leg */}
+          <rect x="182" y="13" width="10" height="4" fill="#3a2214" />
+          <path d="M184 17 H190 L189 40 Q192 44 189 48 L188 92 H186 L185 48 Q182 44 185 40Z" fill="#3a2214" />
+          <rect x="183.5" y="92" width="7" height="6" rx="1" fill="#b08a4a" />
+          <rect x="186" y="17" width="1" height="75" fill="#6e4a2c" opacity="0.4" />
         </svg>
       );
     case "rug":

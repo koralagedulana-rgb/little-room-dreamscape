@@ -300,5 +300,4 @@
   background: radial-gradient(ellipse at center, oklch(0.78 0.09 75 / 0.35), oklch(0.55 0.08 150 / 0.12) 40%, transparent 68%);
   mix-blend-mode: screen; opacity: 0; transition: opacity 0.8s ease;
 }
-.monitor-glow[data-on="true"] { opacity: var(--room-glow-o); animation: room-flicker 6s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) { .monitor-glow[data-on="true"] { animation: none; } }
+.monitor-glow[data-on="true"] { opacity: var(--room-glow-o); }

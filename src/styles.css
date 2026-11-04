@@ -292,3 +292,13 @@
   --room-screen: oklch(0.2 0.02 140); --room-ink: oklch(0.86 0.05 85);
   --room-ambient: radial-gradient(ellipse at 50% 35%, oklch(0.8 0.12 70 / 0.08) 10%, oklch(0.1 0.02 140 / 0.45) 85%); --room-glow-o: 0.75;
 }
+
+/* Live monitor video: fills the bezel, never steals clicks or drags. */
+.monitor-video { border-radius: 2px; background: oklch(0.12 0.01 140); }
+.monitor-video iframe { width: 100% !important; height: 100% !important; display: block; pointer-events: none; border: 0; }
+.monitor-glow {
+  background: radial-gradient(ellipse at center, oklch(0.78 0.09 75 / 0.35), oklch(0.55 0.08 150 / 0.12) 40%, transparent 68%);
+  mix-blend-mode: screen; opacity: 0; transition: opacity 0.8s ease;
+}
+.monitor-glow[data-on="true"] { opacity: var(--room-glow-o); animation: room-flicker 6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .monitor-glow[data-on="true"] { animation: none; } }

@@ -244,6 +244,7 @@ function Builder() {
               return (
                 <div
                   key={it.id}
+                  data-room-item
                   aria-label={c.label}
                   onPointerDown={(e) => onDown(e, it)}
                   onDragOver={
@@ -285,7 +286,14 @@ function Builder() {
                   {it.type === "lamp" && (
                     <div className="room-glow pointer-events-none absolute left-1/2 top-[30%] h-[400%] w-[700%] -translate-x-1/2 -translate-y-1/2" />
                   )}
+                  {it.type === "monitor" && <MonitorGlow />}
                   <ItemArt type={it.type} photo={it.photo} lightColor={it.lightColor} />
+                  {it.type === "monitor" && (
+                    <div
+                      data-monitor-screen
+                      className="pointer-events-none absolute left-[4%] top-[4.706%] h-[63.53%] w-[92%]"
+                    />
+                  )}
                   {it.type === "corkboard" && org.data.pins.length > 0 && (
                     <div className="pointer-events-none absolute inset-[6%] grid grid-cols-3 content-start gap-[4%] bg-[oklch(0.75_0.08_65)] p-[4%]">
                       {org.data.pins.slice(0, 6).map((p, i) =>

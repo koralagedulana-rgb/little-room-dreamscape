@@ -23,6 +23,7 @@ import { OrganizerPanel, type Panel } from "@/components/room/Organizer";
 import { loadLauncher, openExternal } from "@/components/room/Launcher";
 import { PlayerProvider, usePlayer, isList } from "@/components/room/player";
 import { SoundIndicator } from "@/components/room/SoundIndicator";
+import { MonitorGlow } from "@/components/room/MonitorGlow";
 import { useOrganizer, uid, type OrganizerData } from "@/lib/organizer";
 import { fileToResizedDataUrl } from "@/lib/image";
 import { LIGHT_COLORS, isFairyLight } from "@/lib/fairy-lights";

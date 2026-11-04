@@ -1,6 +1,6 @@
 # Active tasks
 - [x] Fairy-light variations and color options.
-- [ ] Live video in the monitor bezel with ambient glow (no CRT overlay, no auto-skip); keep click & drag.
+- [x] Live video in the monitor bezel with ambient glow (no CRT overlay, no auto-skip); keep click & drag.
 - [x] Live now-playing song details, elapsed time, and playback status in the music menu.
 - [x] Subtle speaker indicator synchronized with confirmed playback.
 - [x] Verify playback controls and background continuity.

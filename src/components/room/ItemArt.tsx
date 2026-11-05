@@ -387,23 +387,49 @@ export function ItemArt({ type, photo, lightColor }: { type: ItemType; photo?: s
       );
     case "monitor":
       return (
-        <svg viewBox="0 0 100 85" className="h-full w-full">
-          <rect x="0" y="0" width="100" height="62" rx="3" fill="#141812" />
+        <svg viewBox="0 0 100 85" className="h-full w-full overflow-visible">
+          <ellipse cx="50" cy="85" rx="28" ry="2.5" fill="#000" opacity=".35" />
+          <rect x="0" y="0" width="100" height="62" rx="3" fill="#2a170d" />
+          <rect x="0.8" y="0.8" width="98.4" height="60.4" rx="2.6" fill="none" stroke="#5a3820" strokeWidth="1" />
+          <rect x="2.6" y="2.6" width="94.8" height="56.8" rx="1.2" fill="none" stroke="#c9a24a" strokeWidth="0.8" />
           <rect x="4" y="4" width="92" height="54" fill="var(--room-screen)" />
-          <rect x="10" y="12" width="36" height="4" rx="2" fill="#ffffff55" />
-          <rect x="10" y="20" width="54" height="3" rx="1.5" fill="#ffffff33" />
-          <rect x="10" y="26" width="44" height="3" rx="1.5" fill="#ffffff33" />
-          <rect x="44" y="62" width="12" height="16" fill="#3a3a36" />
-          <rect x="30" y="78" width="40" height="7" rx="2" fill="#2e2e2a" />
+          <rect x="4" y="4" width="92" height="54" fill="none" stroke="#0a0604" strokeWidth="0.6" />
+          <rect x="10" y="12" width="36" height="4" rx="2" fill="#e8cf9a44" />
+          <rect x="10" y="20" width="54" height="3" rx="1.5" fill="#e8cf9a2a" />
+          <rect x="10" y="26" width="44" height="3" rx="1.5" fill="#e8cf9a2a" />
+          {[[1.5, 1.5], [98.5, 1.5], [1.5, 60.5], [98.5, 60.5]].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r="1.8" fill="#c9a24a" stroke="#7a5a24" strokeWidth="0.4" />
+          ))}
+          <rect x="44" y="58.6" width="12" height="2.2" rx="1" fill="#c9a24a" />
+          <circle cx="92" cy="60" r="0.9" fill="#e9b65a" />
+          <path d="M45 62 H55 L53.5 66 Q56 68 53.5 70 L54 77 H46 L46.5 70 Q44 68 46.5 66Z" fill="#4a2c18" />
+          <rect x="45.5" y="65.6" width="9" height="1.2" fill="#c9a24a" />
+          <rect x="45.5" y="72" width="9" height="1" fill="#c9a24a" />
+          <path d="M30 79 Q30 77 33 77 H67 Q70 77 70 79 V83 H30Z" fill="#3a2214" />
+          <rect x="30" y="83" width="40" height="2" rx="1" fill="#1e110a" />
+          <rect x="32" y="78.2" width="36" height="0.8" fill="#c9a24a" opacity=".8" />
         </svg>
       );
     case "lamp":
       return (
         <svg viewBox="0 0 60 90" className="h-full w-full overflow-visible">
-          <path d="M14 4 H46 L56 34 H4Z" fill="#b8893a" />
-          <ellipse cx="30" cy="34" rx="26" ry="4" fill="var(--room-bulb)" />
-          <rect x="28" y="34" width="4" height="46" fill="#8a6a30" />
-          <ellipse cx="30" cy="84" rx="16" ry="5" fill="#8a6a30" />
+          <ellipse cx="30" cy="89" rx="20" ry="2" fill="#000" opacity=".35" />
+          <path d="M6 30 Q6 12 30 10 Q54 12 54 30 Z" fill="#1f4a34" />
+          <path d="M10 26 Q12 15 30 13 Q22 17 18 27Z" fill="#4f8a62" opacity=".55" />
+          <path d="M5 30 H55 Q55 33 52 33 H8 Q5 33 5 30Z" fill="#c9a24a" />
+          <ellipse cx="30" cy="33" rx="22" ry="2.6" fill="var(--room-bulb)" opacity=".9" />
+          <rect x="29" y="5" width="2" height="6" fill="#c9a24a" />
+          <circle cx="30" cy="5" r="2" fill="#e0bd66" />
+          <path d="M42 33 V44" stroke="#c9a24a" strokeWidth="0.6" />
+          <circle cx="42" cy="45" r="1.2" fill="#e0bd66" />
+          <rect x="28" y="33" width="4" height="40" fill="#a8822f" />
+          <rect x="28.8" y="33" width="1" height="40" fill="#e9c878" opacity=".6" />
+          <ellipse cx="30" cy="48" rx="3.6" ry="1.6" fill="#c9a24a" />
+          <ellipse cx="30" cy="62" rx="3.6" ry="1.6" fill="#c9a24a" />
+          <path d="M14 82 Q14 74 30 73 Q46 74 46 82Z" fill="#a8822f" />
+          <path d="M18 80 Q20 76 30 75" stroke="#f0d48a" strokeWidth="0.8" fill="none" opacity=".7" />
+          <rect x="11" y="82" width="38" height="5" rx="1.5" fill="#7a5a24" />
+          <rect x="11" y="82" width="38" height="1" fill="#e0bd66" />
         </svg>
       );
     case "mug":

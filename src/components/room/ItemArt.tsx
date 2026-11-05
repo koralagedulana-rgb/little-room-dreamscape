@@ -149,51 +149,107 @@ export function ItemArt({ type, photo, lightColor }: { type: ItemType; photo?: s
       );
     case "shelf":
       return (
-        <svg viewBox="0 0 100 160" className="h-full w-full">
-          <rect x="0" y="0" width="100" height="160" rx="3" fill="#4a2418" />
-          <rect x="6" y="6" width="88" height="148" fill="#2a1610" />
-          {[50, 100].map((y) => (
-            <rect key={y} x="6" y={y} width="88" height="5" fill="#4a2418" />
+        <svg viewBox="0 0 100 160" className="h-full w-full overflow-visible">
+          {/* contact shadow */}
+          <ellipse cx="50" cy="160" rx="52" ry="3" fill="#000" opacity="0.35" />
+          {/* 2.5D crown top plane */}
+          <path d="M4 0 H96 L100 6 H0Z" fill="#4a2c1a" />
+          <path d="M6 0.8 H94 L97 4.5 H3Z" fill="#5e3a22" opacity="0.6" />
+          {/* crown moulding */}
+          <rect x="0" y="6" width="100" height="4" fill="#3a2214" />
+          <rect x="0" y="6" width="100" height="0.8" fill="#6e4a2c" opacity="0.6" />
+          <rect x="0" y="9.4" width="100" height="1" fill="#24140b" />
+          {/* carcass */}
+          <rect x="2" y="10" width="96" height="144" fill="#2e1a10" />
+          {/* recessed interior */}
+          <rect x="8" y="14" width="84" height="134" fill="#1e0e08" />
+          <rect x="8" y="14" width="84" height="2" fill="#000" opacity="0.5" />
+          {/* pilasters */}
+          <rect x="2" y="10" width="6" height="144" fill="#3a2214" />
+          <rect x="92" y="10" width="6" height="144" fill="#3a2214" />
+          <rect x="3" y="10" width="1.2" height="144" fill="#6e4a2c" opacity="0.5" />
+          <rect x="95.8" y="10" width="1.2" height="144" fill="#1e0e08" opacity="0.7" />
+          {/* shelf boards with shadow lines */}
+          {[58, 102].map((y) => (
+            <g key={y}>
+              <rect x="8" y={y} width="84" height="4" fill="#3a2214" />
+              <rect x="8" y={y} width="84" height="0.8" fill="#6e4a2c" opacity="0.5" />
+              <rect x="8" y={y + 4} width="84" height="1.4" fill="#000" opacity="0.45" />
+            </g>
           ))}
+          {/* top shelf: leather-bound tomes with ribbed spines + brass bands */}
           {[
-            [10, "#7a2e24", 34],
-            [20, "#9a7a3a", 40],
-            [29, "#2f5a3e", 30],
-            [38, "#b8a07a", 38],
-            [48, "#2a3a34", 42],
+            [11, "#5e1f16", 36],
+            [19, "#23402f", 40],
+            [27, "#7a2e24", 33],
+            [35, "#3a2c4a", 38],
+            [43, "#23402f", 35],
           ].map(([x, c, h], i) => (
-            <rect
-              key={i}
-              x={x as number}
-              y={50 - (h as number)}
-              width="8"
-              height={h as number}
-              fill={c as string}
-            />
+            <g key={i}>
+              <rect x={x as number} y={58 - (h as number)} width="7" height={h as number} fill={c as string} />
+              <rect x={x as number} y={58 - (h as number)} width="1.4" height={h as number} fill="#000" opacity="0.3" />
+              {[0.3, 0.55, 0.8].map((f) => (
+                <rect key={f} x={x as number} y={58 - (h as number) + (h as number) * f} width="7" height="0.9" fill="#b08a4a" opacity="0.85" />
+              ))}
+            </g>
           ))}
-          <circle cx="76" cy="38" r="10" fill="#3f7a48" />
-          <rect x="70" y="38" width="12" height="12" fill="#7a5a3a" />
+          {/* leaning book */}
+          <g transform="rotate(14 56 58)">
+            <rect x="52" y="26" width="7" height="32" fill="#7a2e24" />
+            <rect x="52" y="34" width="7" height="0.9" fill="#b08a4a" opacity="0.85" />
+          </g>
+          {/* small brass globe */}
+          <circle cx="76" cy="46" r="9" fill="#8a6a30" />
+          <ellipse cx="76" cy="46" rx="9" ry="3.4" fill="none" stroke="#c9a05a" strokeWidth="0.8" opacity="0.8" />
+          <ellipse cx="76" cy="46" rx="3.4" ry="9" fill="none" stroke="#c9a05a" strokeWidth="0.8" opacity="0.8" />
+          <circle cx="73" cy="43" r="2.4" fill="#c9a05a" opacity="0.5" />
+          <path d="M67 54 Q76 58 85 54" fill="none" stroke="#c9a05a" strokeWidth="1.2" />
+          <rect x="74.5" y="55" width="3" height="3" fill="#8a6a30" />
+          {/* middle shelf: book row + horizontal stack + framed print */}
           {[
-            [12, "#9a7a3a", 36],
-            [22, "#b8a07a", 40],
-            [32, "#7a2e24", 34],
-            [70, "#2f5a3e", 40],
-            [80, "#2a3a34", 36],
+            [11, "#3a2c4a", 34],
+            [19, "#7a2e24", 38],
+            [27, "#23402f", 32],
+            [35, "#5e1f16", 36],
           ].map(([x, c, h], i) => (
-            <rect
-              key={i}
-              x={x as number}
-              y={100 - (h as number)}
-              width="9"
-              height={h as number}
-              fill={c as string}
-            />
+            <g key={i}>
+              <rect x={x as number} y={102 - (h as number)} width="7" height={h as number} fill={c as string} />
+              {[0.3, 0.6, 0.85].map((f) => (
+                <rect key={f} x={x as number} y={102 - (h as number) + (h as number) * f} width="7" height="0.9" fill="#b08a4a" opacity="0.85" />
+              ))}
+            </g>
           ))}
-          <rect x="44" y="84" width="18" height="16" rx="2" fill="#d9c9a3" />
-          <rect x="14" y="128" width="30" height="26" rx="2" fill="#b8a07a" />
-          <rect x="54" y="122" width="34" height="32" rx="2" fill="#8a6440" />
-          <rect x="4" y="154" width="8" height="6" fill="#1e0e08" />
-          <rect x="88" y="154" width="8" height="6" fill="#1e0e08" />
+          {/* horizontal stack */}
+          <rect x="48" y="96" width="20" height="6" rx="0.8" fill="#23402f" />
+          <rect x="50" y="90" width="17" height="6" rx="0.8" fill="#7a2e24" />
+          <rect x="49" y="84" width="18" height="6" rx="0.8" fill="#3a2c4a" />
+          <rect x="49" y="86.5" width="18" height="1" fill="#d9c9a3" opacity="0.4" />
+          {/* small framed print */}
+          <rect x="74" y="78" width="14" height="20" fill="#b08a4a" />
+          <rect x="75.5" y="79.5" width="11" height="17" fill="#1e0e08" />
+          <path d="M77 94 Q80 86 82 90 T86 88 V96 H77Z" fill="#23402f" opacity="0.8" />
+          <circle cx="80" cy="84" r="1.6" fill="#c9a05a" opacity="0.7" />
+          {/* bottom shelf: archive boxes + bookend row */}
+          <rect x="11" y="126" width="26" height="22" rx="1" fill="#3d2415" stroke="#1e0e08" strokeWidth="0.8" />
+          <rect x="14" y="129" width="20" height="16" rx="0.6" fill="none" stroke="#5a3820" strokeWidth="0.6" />
+          <rect x="19" y="134" width="10" height="5" rx="0.6" fill="#d9c9a3" />
+          <rect x="42" y="122" width="26" height="26" rx="1" fill="#3d2415" stroke="#1e0e08" strokeWidth="0.8" />
+          <rect x="45" y="125" width="20" height="20" rx="0.6" fill="none" stroke="#5a3820" strokeWidth="0.6" />
+          <rect x="50" y="132" width="10" height="5" rx="0.6" fill="#d9c9a3" />
+          {[
+            [72, "#5e1f16", 24],
+            [79, "#23402f", 26],
+          ].map(([x, c, h], i) => (
+            <g key={i}>
+              <rect x={x as number} y={148 - (h as number)} width="6" height={h as number} fill={c as string} />
+              <rect x={x as number} y={148 - (h as number) + (h as number) * 0.5} width="6" height="0.8" fill="#b08a4a" opacity="0.85" />
+            </g>
+          ))}
+          {/* plinth base + bracket feet */}
+          <rect x="2" y="148" width="96" height="4" fill="#24140b" />
+          <rect x="0" y="152" width="100" height="3" fill="#3a2214" />
+          <path d="M4 155 H14 L12 160 H6Z" fill="#24140b" />
+          <path d="M86 155 H96 L94 160 H88Z" fill="#24140b" />
         </svg>
       );
     case "desk":
@@ -239,15 +295,43 @@ export function ItemArt({ type, photo, lightColor }: { type: ItemType; photo?: s
       );
     case "rug":
       return (
-        <svg viewBox="0 0 200 36" className="h-full w-full">
+        <svg viewBox="0 0 200 36" className="h-full w-full overflow-visible">
+          {/* fringe tassels */}
+          {Array.from({ length: 9 }, (_, i) => (
+            <g key={i}>
+              <line x1={2 + i * 2.2} y1="34.5" x2={1.4 + i * 2.2} y2="36" stroke="#d9c9a3" strokeWidth="0.7" opacity="0.8" />
+              <line x1={198 - i * 2.2} y1="34.5" x2={198.6 - i * 2.2} y2="36" stroke="#d9c9a3" strokeWidth="0.7" opacity="0.8" />
+            </g>
+          ))}
+          {/* field */}
           <path d="M20 0 H180 L200 36 H0Z" fill="var(--room-rug)" />
-          <path
-            d="M30 4 H170 L186 32 H14Z"
-            fill="none"
-            stroke="var(--room-rug-line)"
-            strokeWidth="1.5"
-            strokeDasharray="4 3"
-          />
+          {/* outer border band */}
+          <path d="M24 2.5 H176 L194 33.5 H6Z" fill="none" stroke="var(--room-rug-line)" strokeWidth="3" />
+          {/* brass pinstripe */}
+          <path d="M27 4.5 H173 L189 31.5 H11Z" fill="none" stroke="#b08a4a" strokeWidth="0.7" opacity="0.85" />
+          {/* inner guard band */}
+          <path d="M31 7 H169 L183 29 H17Z" fill="none" stroke="var(--room-rug-line)" strokeWidth="1.2" strokeDasharray="3 2.4" opacity="0.9" />
+          {/* centre medallion */}
+          <path d="M100 8 L126 18 L100 28 L74 18Z" fill="none" stroke="#b08a4a" strokeWidth="1" opacity="0.9" />
+          <path d="M100 11.5 L117 18 L100 24.5 L83 18Z" fill="var(--room-rug-line)" opacity="0.55" />
+          <path d="M100 14.5 L109 18 L100 21.5 L91 18Z" fill="#b08a4a" opacity="0.8" />
+          <circle cx="100" cy="18" r="1.1" fill="#d9c9a3" />
+          {/* side medallions */}
+          {[52, 148].map((cx) => (
+            <g key={cx}>
+              <path d={`M${cx} 12 L${cx + 9} 18 L${cx} 24 L${cx - 9} 18Z`} fill="none" stroke="#b08a4a" strokeWidth="0.8" opacity="0.75" />
+              <circle cx={cx} cy="18" r="1.6" fill="#b08a4a" opacity="0.7" />
+            </g>
+          ))}
+          {/* corner motifs */}
+          {[
+            "M33 10 L40 13 L35 17",
+            "M167 10 L160 13 L165 17",
+            "M22 26 L30 24 L27 29",
+            "M178 26 L170 24 L173 29",
+          ].map((d, i) => (
+            <path key={i} d={d} fill="none" stroke="#b08a4a" strokeWidth="0.7" opacity="0.6" />
+          ))}
         </svg>
       );
     case "monitor":

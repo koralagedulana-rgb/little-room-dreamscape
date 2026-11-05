@@ -6,7 +6,7 @@
 - [x] Verify playback controls and background continuity.
 
 # Future queue (not part of this update)
-- 2.5D furniture perspective upgrade: desk, bookshelf, rug done; filing cabinet, monitor bezel, banker's lamp, corkboard, window seat remain.
+- 2.5D furniture perspective upgrade: desk, bookshelf, rug, corkboard, photo frame done; filing cabinet, monitor bezel, banker's lamp, window seat remain.
 
 # Completed previously
 - [x] Corkboard photo pinning, monitor launcher, foliage and lighting additions, and study props (user confirmed).

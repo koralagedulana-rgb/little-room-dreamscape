@@ -11,45 +11,74 @@ export function ItemArt({ type, photo, lightColor }: { type: ItemType; photo?: s
       return <GothicWindow />;
     case "corkboard":
       return (
-        <svg viewBox="0 0 200 144" className="h-full w-full">
-          <rect x="0" y="0" width="200" height="144" rx="4" fill="#4a2c1a" />
-          <rect x="8" y="8" width="184" height="128" fill="#8a6440" />
-          {Array.from({ length: 40 }).map((_, i) => (
+        <svg viewBox="0 0 200 144" className="h-full w-full overflow-visible">
+          {/* soft wall shadow */}
+          <rect x="5" y="7" width="200" height="144" rx="6" fill="#000" opacity="0.3" />
+          {/* bevelled walnut frame */}
+          <rect x="0" y="0" width="200" height="144" rx="4" fill="#24140b" />
+          <rect x="1.5" y="1.5" width="197" height="141" rx="3" fill="#4a2c1a" />
+          <rect x="1.5" y="1.5" width="197" height="3" rx="1.5" fill="#6e4a2c" opacity="0.7" />
+          {/* gilded inner lip */}
+          <rect x="7" y="7" width="186" height="130" fill="#b08a4a" />
+          <rect x="8.6" y="8.6" width="182.8" height="126.8" fill="#7a5a2e" />
+          {/* aged cork */}
+          <rect x="12" y="12" width="176" height="120" fill="#6e4c2e" />
+          <rect x="12" y="12" width="176" height="120" fill="#7a5636" opacity="0.6" />
+          {Array.from({ length: 48 }).map((_, i) => (
             <circle
               key={i}
-              cx={((i * 47) % 180) + 12}
-              cy={((i * 31) % 120) + 12}
+              cx={((i * 47) % 168) + 16}
+              cy={((i * 31) % 112) + 16}
               r="1"
-              fill="#6a4a2c"
+              fill="#4e3418"
+              opacity="0.55"
             />
           ))}
-          <g transform="rotate(-5 45 50)">
-            <rect x="22" y="22" width="46" height="54" fill="#e8dcc0" />
-            <rect x="27" y="27" width="36" height="34" fill="#5a6a5e" />
-            <circle cx="45" cy="40" r="7" fill="#7b5a49" />
+          {/* botanical sketch on parchment */}
+          <g transform="rotate(-5 48 52)">
+            <rect x="24" y="24" width="48" height="58" fill="#e2d3ae" />
+            <rect x="24" y="24" width="48" height="58" fill="none" stroke="#b89a6a" strokeWidth="1" />
+            <path d="M48 74 V40" stroke="#3f5a3a" strokeWidth="1.4" fill="none" />
+            {[46, 52, 58, 64].map((y, i) => (
+              <g key={y}>
+                <path d={`M48 ${y} q ${-10 - i} -3 ${-14 - i} -8`} stroke="#3f5a3a" strokeWidth="1" fill="none" />
+                <path d={`M48 ${y} q ${10 + i} -3 ${14 + i} -8`} stroke="#3f5a3a" strokeWidth="1" fill="none" />
+              </g>
+            ))}
+            <text x="48" y="80" fontSize="5" textAnchor="middle" fill="#6a5636" fontFamily="Gaegu, cursive" letterSpacing="0.5">
+              filix mas
+            </text>
           </g>
-          <circle cx="45" cy="22" r="3.5" fill="#8a2a2a" />
-          <rect x="120" y="70" width="40" height="38" fill="#d6c08a" transform="rotate(4 140 89)" />
-          <text
-            x="140"
-            y="92"
-            fontSize="9"
-            textAnchor="middle"
-            fill="#3a2a14"
-            fontFamily="Gaegu, cursive"
-            transform="rotate(4 140 89)"
-          >
-            drink water ♡
-          </text>
-          <rect
-            x="105"
-            y="20"
-            width="60"
-            height="30"
-            fill="#b89a7a"
-            transform="rotate(-3 135 35)"
-          />
-          <circle cx="135" cy="20" r="3" fill="#b08a3a" />
+          <circle cx="48" cy="23" r="3" fill="#b08a4a" />
+          <circle cx="47" cy="22" r="1" fill="#e8cc8a" />
+          {/* sepia photograph */}
+          <g transform="rotate(4 140 46)">
+            <rect x="118" y="26" width="44" height="40" fill="#e8dcc0" />
+            <rect x="122" y="30" width="36" height="28" fill="#5a4632" />
+            <circle cx="140" cy="42" r="6" fill="#8a6a4a" />
+            <path d="M122 52 Q132 44 140 50 T158 48 V58 H122Z" fill="#3e2f1e" />
+          </g>
+          <circle cx="140" cy="26" r="3" fill="#b08a4a" />
+          <circle cx="139" cy="25" r="1" fill="#e8cc8a" />
+          {/* parchment note with wax seal */}
+          <g transform="rotate(3 135 98)">
+            <rect x="112" y="80" width="46" height="34" fill="#d6c08a" />
+            <text x="135" y="98" fontSize="9" textAnchor="middle" fill="#3a2a14" fontFamily="Gaegu, cursive">
+              drink water ♡
+            </text>
+            <circle cx="150" cy="108" r="4.5" fill="#6e1f24" />
+            <circle cx="150" cy="108" r="2" fill="#8a2a2a" />
+          </g>
+          <circle cx="135" cy="80" r="3" fill="#b08a4a" />
+          <circle cx="134" cy="79" r="1" fill="#e8cc8a" />
+          {/* twine with an old brass key */}
+          <path d="M20 118 Q60 128 100 120" stroke="#b89a6a" strokeWidth="1.2" fill="none" />
+          <g transform="rotate(-12 34 122)">
+            <circle cx="30" cy="120" r="3.4" fill="none" stroke="#b08a4a" strokeWidth="1.6" />
+            <rect x="32.6" y="119.2" width="12" height="1.8" fill="#b08a4a" />
+            <rect x="40" y="120.8" width="1.8" height="3.4" fill="#b08a4a" />
+            <rect x="43" y="120.8" width="1.8" height="2.6" fill="#b08a4a" />
+          </g>
         </svg>
       );
     case "calendar":
@@ -131,9 +160,29 @@ export function ItemArt({ type, photo, lightColor }: { type: ItemType; photo?: s
     }
     case "frame":
       return (
-        <svg viewBox="0 0 80 96" className="h-full w-full">
-          <rect width="80" height="96" rx="3" fill="var(--room-frame)" />
-          <rect x="7" y="7" width="66" height="82" fill="var(--room-mat)" />
+        <svg viewBox="0 0 80 96" className="h-full w-full overflow-visible">
+          {/* soft shadow */}
+          <rect x="3" y="5" width="80" height="96" rx="4" fill="#000" opacity="0.3" />
+          {/* gilded baroque frame */}
+          <rect width="80" height="96" rx="3" fill="#6e5222" />
+          <rect x="1.5" y="1.5" width="77" height="93" rx="2.5" fill="#b08a4a" />
+          <rect x="1.5" y="1.5" width="77" height="2.5" fill="#e8cc8a" opacity="0.7" />
+          {/* corner rosettes */}
+          {[
+            [3.5, 3.5],
+            [76.5, 3.5],
+            [3.5, 92.5],
+            [76.5, 92.5],
+          ].map(([cx, cy]) => (
+            <g key={`${cx}-${cy}`}>
+              <circle cx={cx} cy={cy} r="2.6" fill="#8a6a2e" />
+              <circle cx={cx} cy={cy} r="1.3" fill="#e8cc8a" />
+            </g>
+          ))}
+          {/* dark velvet matting */}
+          <rect x="7" y="7" width="66" height="82" fill="#241a12" />
+          <rect x="9" y="9" width="62" height="78" fill="#31241a" />
+          <rect x="12" y="12" width="56" height="72" fill="none" stroke="#b08a4a" strokeWidth="0.8" opacity="0.6" />
           {photo ? (
             <svg x="14" y="14" width="52" height="56" viewBox="0 0 52 56" overflow="hidden">
               <image href={photo} width="52" height="56" preserveAspectRatio="xMidYMid slice" />
@@ -145,6 +194,8 @@ export function ItemArt({ type, photo, lightColor }: { type: ItemType; photo?: s
               <path d="M14 62 Q30 52 40 60 T66 56 V70 H14Z" fill="var(--room-hill)" />
             </>
           )}
+          {/* glass sheen */}
+          <path d="M14 14 L34 14 L20 70 L14 70Z" fill="#fff" opacity="0.06" />
         </svg>
       );
     case "shelf":

@@ -301,3 +301,12 @@
   mix-blend-mode: screen; opacity: 0; transition: opacity 0.8s ease;
 }
 .monitor-glow[data-on="true"] { opacity: var(--room-glow-o); }
+
+/* Wall architecture: crown, upper frame panels, chair rail, wainscoting. Derived from --room-wall so every theme keeps its colour. */
+.wall-crown { background: linear-gradient(180deg, color-mix(in oklch, var(--room-trim) 80%, black), var(--room-trim) 60%, color-mix(in oklch, var(--room-wall) 70%, black)); box-shadow: 0 3px 6px oklch(0 0 0 / 0.25); }
+.wall-panel { border-radius: 2px; background: color-mix(in oklch, var(--room-wall) 94%, black);
+  box-shadow: inset 2px 2px 0 color-mix(in oklch, var(--room-wall) 70%, black), inset -2px -2px 0 color-mix(in oklch, var(--room-wall) 82%, white), inset 0 0 0 6px var(--room-wall), inset 7px 7px 0 color-mix(in oklch, var(--room-wall) 82%, white), inset -7px -7px 0 color-mix(in oklch, var(--room-wall) 72%, black); }
+.wall-panel-tall { background: transparent; box-shadow: inset 1px 1px 0 color-mix(in oklch, var(--room-wall) 72%, black), inset -1px -1px 0 color-mix(in oklch, var(--room-wall) 85%, white); opacity: 0.8; }
+.wainscot { background: linear-gradient(180deg, color-mix(in oklch, var(--room-wall) 88%, black), color-mix(in oklch, var(--room-wall) 80%, black)); }
+.wall-rail { background: linear-gradient(180deg, color-mix(in oklch, var(--room-trim) 70%, white), var(--room-trim) 45%, color-mix(in oklch, var(--room-trim) 70%, black)); box-shadow: 0 3px 5px oklch(0 0 0 / 0.3); }
+.wall-baseboard { background: linear-gradient(180deg, color-mix(in oklch, var(--room-trim) 75%, white) 0 12%, var(--room-trim) 12%, color-mix(in oklch, var(--room-trim) 75%, black)); box-shadow: 0 -2px 4px oklch(0 0 0 / 0.2); }

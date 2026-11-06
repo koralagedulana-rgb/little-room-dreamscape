@@ -299,12 +299,12 @@ export function PlantArt({ type }: { type: PlantType }) {
           ))}
           {Array.from({ length: 46 }, (_, i) => {
             const col = i % 4;
-            const xs = [[10, 30, 18, 10, 26], [50, 60, 44, 34, 52], [95, 80, 96, 110, 90], [130, 120, 128, 134, 118]][col];
+            const xs: number[] = ([[10, 30, 18, 10, 26], [50, 60, 44, 34, 52], [95, 80, 96, 110, 90], [130, 120, 128, 134, 118]][col] ?? [0, 0, 0, 0, 0]);
             const maxY = [180, 150, 170, 120][col];
             const t = Math.floor(i / 4) / 11.5;
             const y = t * maxY;
             const seg = Math.min(3, Math.floor(t * 4));
-            const x = xs[seg] + (xs[seg + 1] - xs[seg]) * (t * 4 - seg) * 0.6 + (i % 2 ? 4 : -4);
+            const x = xs[seg]! + (xs[seg + 1]! - xs[seg]!) * (t * 4 - seg) * 0.6 + (i % 2 ? 4 : -4);
             const s = 0.55 + ((i * 7) % 5) * 0.06;
             return (
               <g key={i} transform={`translate(${x} ${y}) rotate(${(i * 47) % 360 - 180 > 0 ? 20 : -20}) scale(${s})`}>

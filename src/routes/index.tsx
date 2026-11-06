@@ -235,7 +235,15 @@ function Builder() {
           className="room room-canvas relative touch-none select-none overflow-hidden"
         >
           <div className="absolute inset-x-0 top-0 h-[78%] bg-[var(--room-wall)]" />
-          <div className="absolute inset-x-0 top-[77%] h-[2%] bg-[var(--room-trim)]" />
+          <div aria-hidden className="wall-crown pointer-events-none absolute inset-x-0 top-0 h-[2.2%]" />
+          <div aria-hidden className="wall-upper-panels pointer-events-none absolute inset-x-[1.5%] top-[6%] flex h-[34%] gap-[1.5%]">
+            {Array.from({ length: 6 }, (_, i) => <div key={i} className="wall-panel wall-panel-tall flex-1" />)}
+          </div>
+          <div aria-hidden className="wall-rail pointer-events-none absolute inset-x-0 top-[44%] h-[1.6%]" />
+          <div aria-hidden className="wainscot pointer-events-none absolute inset-x-0 top-[45.6%] flex h-[31.4%] gap-[1.2%] px-[1.2%] py-[1.4%]">
+            {Array.from({ length: 8 }, (_, i) => <div key={i} className="wall-panel flex-1" />)}
+          </div>
+          <div className="absolute inset-x-0 top-[77%] h-[2%] bg-[var(--room-trim)] wall-baseboard" />
           <div className="room-floor absolute inset-x-0 bottom-0 h-[22%]" />
           {[...items]
             .sort((a, b) => a.z - b.z)

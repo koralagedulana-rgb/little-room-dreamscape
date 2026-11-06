@@ -186,7 +186,7 @@ export function PlantArt({ type }: { type: PlantType }) {
               );
             })}
           </g>
-          {[[26, 34, -40], [54, 34, 40], [34, 30, -15], [46, 30, 15]].map(([x, y, r], i) => (
+          {([[26, 34, -40], [54, 34, 40], [34, 30, -15], [46, 30, 15]] as [number, number, number][]).map(([x, y, r], i) => (
             <Leaf key={i} x={x} y={y} l={12} w={4} rot={r} fill={G.mid} />
           ))}
           <path d="M22 34 H58 Q58 52 48 58 H32 Q22 52 22 34Z" fill={brass} />
@@ -198,9 +198,9 @@ export function PlantArt({ type }: { type: PlantType }) {
       return (
         <svg viewBox="0 0 80 128" className="h-full w-full overflow-visible">
           <Brass id={id} />
-          {[
+          {([
             [22, 48, 108, -1], [34, 48, 124, 0], [48, 48, 116, 1], [60, 44, 96, 1], [16, 40, 88, -1],
-          ].map(([x, y0, y1, d], i) => (
+          ] as [number, number, number, number][]).map(([x, y0, y1, d], i) => (
             <g key={i} className="room-sway" style={{ transformOrigin: `${x}px ${y0}px`, animationDelay: `${i * 0.5}s` }}>
               <path d={`M${x} ${y0} Q${x + d * 8} ${(y0 + y1) / 2} ${x + d * 3} ${y1}`} stroke={G.dark} strokeWidth="1" fill="none" />
               {Array.from({ length: 7 }, (_, j) => {
@@ -211,7 +211,7 @@ export function PlantArt({ type }: { type: PlantType }) {
               })}
             </g>
           ))}
-          {[[20, 24, -50], [30, 18, -25], [40, 14, 0], [50, 18, 25], [60, 24, 50], [26, 26, -70], [54, 26, 70]].map(([x, y, r], i) => (
+          {([[20, 24, -50], [30, 18, -25], [40, 14, 0], [50, 18, 25], [60, 24, 50], [26, 26, -70], [54, 26, 70]] as [number, number, number][]).map(([x, y, r], i) => (
             <Heart key={i} x={x} y={y + 6} s={1.05} rot={r} fill={i % 2 ? G.mid : G.light} />
           ))}
           <path d="M16 28 H64 L60 50 H20Z" fill="#3a2214" />
@@ -258,9 +258,9 @@ export function PlantArt({ type }: { type: PlantType }) {
         <svg viewBox="0 0 60 114" className="h-full w-full overflow-visible">
           <Brass id={id} />
           <Shadow cx={30} cy={112} rx={18} />
-          {[
+          {([
             [16, 22, -8], [24, 4, -3], [33, 8, 3], [42, 24, 9], [29, 30, 0], [20, 36, -5],
-          ].map(([x, top, lean], i) => {
+          ] as [number, number, number][]).map(([x, top, lean], i) => {
             const mid = (80 + top) / 2;
             return (
               <g key={i}>
@@ -300,7 +300,7 @@ export function PlantArt({ type }: { type: PlantType }) {
           {Array.from({ length: 46 }, (_, i) => {
             const col = i % 4;
             const xs: number[] = ([[10, 30, 18, 10, 26], [50, 60, 44, 34, 52], [95, 80, 96, 110, 90], [130, 120, 128, 134, 118]][col] ?? [0, 0, 0, 0, 0]);
-            const maxY = [180, 150, 170, 120][col];
+            const maxY = [180, 150, 170, 120][col] ?? 150;
             const t = Math.floor(i / 4) / 11.5;
             const y = t * maxY;
             const seg = Math.min(3, Math.floor(t * 4));
